@@ -8,7 +8,7 @@ Last updated: 2026-11-15. This file is the register of what is confirmed and wha
 |---|---|---|
 | D1 | Stack: NestJS + PostgreSQL + Prisma API; Next.js storefront; React (Vite) manager and agent app; agent side is a mobile-first PWA | Developer, 2026-11-15 |
 | D2 | FastAPI is not used in Phase 1 | Agreed in discussion |
-| D3 | Hosting: Render (paid) for the API, Vercel for the storefront, Supabase for PostgreSQL | Developer; tiers see Q7 |
+| D3 | Hosting: **Render** (paid web service and paid Render Postgres) for the API and database, **Vercel** for the storefront and portal. Supabase is **not** used | Developer, 2026-11-15; tiers see Q7 |
 | D4 | Customers reach the shop through a link shared on the company's Facebook page | Developer |
 | D5 | Payment is **on delivery** in Phase 1 (cash, M-Pesa, paybill, recorded by the agent) | Developer |
 | D6 | Kenya only, currency KES | Developer |
@@ -34,7 +34,7 @@ Mark each as answered with a date when resolved.
 | Q4 | Which counties does each agent cover? Are there agents beyond the 3 tabs? What happens to a county with no agent (working assumption: manager queue as "unassigned")? | Auto-assignment |
 | Q5 | The improved Google Sheet (header row, Order ID column, status values). Until it arrives, `docs/INTEGRATIONS.md` describes a **proposed** layout | Sheet sync |
 | Q6 | SMS provider, current pricing, and sender name registration for Kenya. Not verified | SMS |
-| Q7 | Hosting plan decision. **Verified 2026-11-15 from Render's docs:** free web services sleep after 15 minutes idle; free Postgres expires after 30 days (14-day grace, then deleted), is capped at 1 GB, has no backups, and Render says free instances are not for production. **Not verified:** whether Vercel's Hobby plan permits a commercial site (the fair-use page points to the Terms of Service; read it), Supabase free-plan terms, and paid Render prices. Proposal: Render paid web service + Render paid Postgres for the API and database, Vercel for the front ends, Supabase dropped. Needs the developer's decision | Deployment |
+| Q7 | Hosting plan decision. **Verified 2026-11-15 from Render's docs:** free web services sleep after 15 minutes idle; free Postgres expires after 30 days (14-day grace, then deleted), is capped at 1 GB, has no backups, and Render says free instances are not for production. **Not verified:** whether Vercel's Hobby plan permits a commercial site (the fair-use page points to the Terms of Service; read it), Supabase free-plan terms, and paid Render prices. Decision D3 adopts Render paid web service + Render paid Postgres, Vercel for the front ends, no Supabase. Still open: paid Render prices and the Vercel plan question | Deployment |
 | Q8 | Delivery fee: does the sheet amount ever include a delivery fee? None seen | Pricing |
 | Q9 | Manager WhatsApp number and hours for the "Talk to us" button | Storefront |
 | Q10 | How many manager or admin users, and do they need different permissions? | Auth |

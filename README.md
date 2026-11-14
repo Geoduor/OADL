@@ -21,7 +21,7 @@ Order, assignment and delivery management for a Kenyan logistics and distributio
 | Database | PostgreSQL, accessed with Prisma |
 | Storefront | Next.js (server-rendered so Facebook link previews work) |
 | Manager and agent apps | React (Vite), one app with role-based routes, agent side is a PWA |
-| Hosting | API on Render, storefront on Vercel, database on Supabase Postgres |
+| Hosting | API on Render, storefront on Vercel, database on Render Postgres |
 | FastAPI | Not used in Phase 1. Only if a clear need appears later |
 
 ## Documentation map

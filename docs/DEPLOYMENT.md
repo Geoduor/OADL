@@ -7,14 +7,14 @@ Status: Draft v0.1, 2026-11-15. Platform details below are plans, not verified f
 | Environment | API | Storefront | Database |
 |---|---|---|---|
 | Local | `pnpm --filter api dev` | `pnpm --filter storefront dev` | Local PostgreSQL (Docker) or a separate dev database |
-| Staging (recommended) | Render | Vercel preview | Separate Supabase project |
-| Production | Render (paid) | Vercel | Supabase PostgreSQL |
+| Staging (recommended) | Render | Vercel preview | Separate Render Postgres (a cheaper plan; free Postgres expires after 30 days) |
+| Production | Render (paid) | Vercel | Render Postgres (paid) |
 
 ## Before go-live (blocking items)
 
-1. **Plan terms (Q7):** the API must run on a **paid, always-on Render instance** (free instances sleep after 15 minutes, which would break real-time pop-ups and the outbox worker), and the database must be a **paid Postgres** (Render's free Postgres expires after 30 days and has no backups). Read Vercel's Terms of Service fair-use section to confirm the plan used for the storefront and portal is allowed for a commercial site. If Supabase stays, check its current free-plan terms first.
+1. **Plan terms (Q7):** the API must run on a **paid, always-on Render instance** (free instances sleep after 15 minutes, which would break real-time pop-ups and the outbox worker), and the database must be a **paid Postgres** (Render's free Postgres expires after 30 days and has no backups). Read Vercel's Terms of Service fair-use section to confirm the plan used for the storefront and portal is allowed for a commercial site.
 2. **Backups:** confirm what backups the chosen database plan includes and test a restore.
-3. **Prisma and Supabase:** read current documentation on connection strings, pooling and migrations for Prisma with Supabase before configuring `DATABASE_URL`.
+3. **Prisma and Render Postgres:** read current documentation on connection strings (internal vs external URL), connection limits and migrations on Render before configuring `DATABASE_URL`. Region choice (closest to Kenya that Render offers) is to be checked.
 4. **CORS and cookies:** allow only the storefront and portal origins.
 5. **SMS provider** set up and sender name approved if required (Q6).
 6. **Google service account** created and the sheet shared with it.

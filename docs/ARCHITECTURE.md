@@ -16,7 +16,7 @@ One NestJS API is the only thing that touches the database and external services
                                            │  agents, products, stock, payments,
                                            │  notifications, realtime, sms, sheets-sync
                                            ▼
-                     [ PostgreSQL (Supabase) ] ◄── Prisma
+                     [ PostgreSQL (Render)   ] ◄── Prisma
                                            │
                        outbox worker (in the API process, Phase 1)
                           ├──> Google Sheets API (service account)  one-way
@@ -87,7 +87,7 @@ Worker polls pending outbox rows, calls the external service, marks done or incr
 
 | Risk | Mitigation |
 |---|---|
-| Free-tier database pausing or commercial-use limits (Q7, unverified) | Verify terms, move to a paid plan before go-live |
+| Free-tier limits (Render free Postgres expires after 30 days and has no backups; free web services sleep; Vercel commercial terms unverified, Q7) | Paid Render web service and Postgres for production; read Vercel's terms before launch |
 | Fake or prank orders (payment on delivery) | CAPTCHA, rate limit, optional manager confirmation call (Q16) |
 | Sheet drift if people edit system columns | Protected ranges, one-way sync, Order ID column (Q20) |
 | Stock mismatch between ledger and physical count | Adjustment movements with reason, periodic counts (Q12) |

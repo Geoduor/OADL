@@ -10,7 +10,7 @@ OADL is a real production system for a real client: a Kenyan company that sells 
 
 - **Do not invent business rules**, prices, products, counties per agent, SMS rates, API limits or provider requirements. If it is not in `docs/`, ask or add it to `docs/OPEN_QUESTIONS.md`.
 - Mark unknowns in code with `// TODO(confirm): <question>` and in docs with `UNCONFIRMED` or `UNVERIFIED`.
-- Third-party facts (Google Sheets API, SMS providers, Supabase, Render, Vercel, Safaricom Daraja) change. **Read the current official documentation before implementing** and link it in the PR. Do not rely on memory.
+- Third-party facts (Google Sheets API, SMS providers, Render, Vercel, Safaricom Daraja) change. **Read the current official documentation before implementing** and link it in the PR. Do not rely on memory.
 - If a doc and the code disagree, stop and flag it. Do not silently pick one.
 - Do not add features beyond the current phase (`docs/ROADMAP.md`).
 
