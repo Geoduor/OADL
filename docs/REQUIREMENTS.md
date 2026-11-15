@@ -13,13 +13,18 @@ Status: Draft v0.1, 2026-11-15. Items depending on open questions are tagged wit
 ## 2. In scope (Phase 1)
 
 ### 2.1 Storefront (Next.js)
-- US-1: As a customer I can see the product list and a product page with image, description and prices.
-- US-2: As a customer I can choose a product and a bundle size and see the total in KES. (Only defined bundle sizes are offered, Q2.)
-- US-3: As a customer I can place an order with: full name, phone, county (dropdown), free-text address and landmark. Payment is on delivery, and the page says so.
-- US-4: As a customer I see a confirmation with my order number.
+
+**Context (2026-11-15):** the client wants customers to buy straight from Facebook: an ad or post with a "Shop now" button opens a mobile page inside Facebook's in-app browser, where the customer picks a bundle and submits a short order form, paying on delivery. The client shared three screenshots of other sellers' pages as examples of the style. Use them for **layout ideas only**; do not copy their text, images, branding or product claims. The details below are proposals pending Q23 to Q27.
+
+- US-1: Each product has its own **mobile landing page** (one URL per product slug) that a Facebook ad can link to directly: product name and images, price, bundle selector, the order form, a short benefits section, and a clear "pay on delivery" note. Copy must be approved by the client (Q14).
+- US-2: As a customer I can choose a bundle (for example 1, 2 or 3 units) and see the total in KES update. Only defined bundles are offered (Q2). A struck-through "was" price and a "Save %" badge are optional and depend on Q25.
+- US-3: As a customer I can order from the **same page** with as few fields as possible: full name, phone, county (dropdown, needed for auto-assignment) and town, plus an optional address or landmark (Q26). The button states that payment is on delivery.
+- US-4: As a customer I see a confirmation with my order number and what happens next (the company will call to confirm, Q16).
 - US-5: As a customer I can tap "Talk to us" to open WhatsApp with the manager and a pre-filled message (Q9).
-- US-6: Product pages carry Open Graph tags (title, image, description) so Facebook link previews are correct.
-- US-7: The order form resists bots and double submits (rate limit, CAPTCHA, idempotency key).
+- US-6: Product pages carry Open Graph tags (for organic shares) and load fast on mobile data, because ad traffic arrives on phones.
+- US-7: The order form resists bots and double submits (rate limit, idempotency key, bot protection that is as invisible as possible so it does not hurt conversion).
+- US-8: The landing URL's UTM parameters (source, medium, campaign, content) and the product slug are saved on the order, so the client can see which ad produced which order. Meta Pixel or Conversions API tracking is **not** Phase 1 (Q27).
+- US-9: The pages must work inside Facebook's in-app browser on real Android and iPhone devices. This is **UNVERIFIED** and must be tested early: form submit, `tel:` and `wa.me` links, and no reliance on browser storage.
 
 ### 2.2 Manager dashboard
 - US-10: I see new orders in real time (pop-up plus list) and unassigned orders in a queue.

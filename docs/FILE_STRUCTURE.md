@@ -66,8 +66,7 @@ OADL/
 │  ├─ storefront/               # Next.js (App Router assumed)
 │  │  ├─ app/
 │  │  │  ├─ page.tsx            # landing and product grid
-│  │  │  ├─ products/[slug]/page.tsx   # product page with Open Graph metadata
-│  │  │  ├─ checkout/page.tsx
+│  │  │  ├─ products/[slug]/page.tsx   # product landing page: bundles, order form, Open Graph metadata (Facebook ad destination)
 │  │  │  └─ order/[orderNo]/page.tsx   # confirmation
 │  │  ├─ components/
 │  │  ├─ lib/                   # API client, formatters
