@@ -20,6 +20,7 @@ Last updated: 2026-11-15. This file is the register of what is confirmed and wha
 | D12 | Google Sheets sync is in **Phase 1**, one-way (database to sheet) | Developer |
 | D13 | The company is certified to sell these products (regulation is not a blocker) | Developer |
 | D14 | Customers enter their location as free text; a county selection is added for assignment | Developer's free-text, county proposed (see Q4) |
+| D16 | API scaffold: NestJS 12, ESM module system, Vitest, oxlint, TypeScript strict. NestJS Observe and Mau were deliberately **not** adopted | Developer, 2026-11-15 |
 | D15 | Sheet "OADL-AGENTS SHEET ORDERS" has 3 tabs: `JEOFREY -NAIROBI`, `ANDY COLE-COAST`, `BRAMUEL -KSM & OTHERS` (verified via the Sheets connector) | Verified 2026-11-15 |
 
 ## Open questions
@@ -48,3 +49,5 @@ Mark each as answered with a date when resolved.
 | Q18 | What does "OADL" stand for? Branding, logo and domain name | README, storefront |
 | Q19 | Data retention period for customer data and registration obligations under Kenya's Data Protection Act (company to confirm) | Compliance |
 | Q20 | Should agents keep editing the sheet by hand after go-live? Recommended no (protected columns), because two writers cause drift | Sheet sync |
+| Q21 | DTO validation approach: `class-validator` or a Standard Schema library such as Zod (Nest's own guidance says both work; Zod could be shared by the storefront, portal and API). Decide before the first DTO | API |
+| Q22 | Does Prisma work with this ESM NestJS 12 scaffold? Not verified. Check Prisma's current docs at the start of the database step; if it does not, regenerate the empty scaffold as CommonJS | Database |

@@ -30,13 +30,15 @@ Monorepo (pnpm workspaces). See `docs/FILE_STRUCTURE.md`.
 - `apps/portal`: React + Vite (manager and agent, agent side is a PWA)
 - `packages/shared`: enums, constants and types shared by all apps (no business logic, no secrets)
 
+`apps/api` is scaffolded (2026-11-15): NestJS 12, **ESM**, TypeScript strict, Vitest, oxlint. In ESM, relative imports end in `.js`, `__dirname` does not exist (use `import.meta.dirname`), and mocks are `vi.fn()`. See `apps/api/AGENTS.md`. The storefront, portal and shared package are not created yet.
+
 ## 5. Conventions
 
 - TypeScript strict mode everywhere. No `any` without a comment explaining why.
 - Money is stored as **integer KES** (no decimals, no floats).
 - Phone numbers are stored in **E.164** (`+254...`). Normalise on input.
 - Timestamps are stored in **UTC**; display in `Africa/Nairobi`.
-- API DTOs use `class-validator`. Never trust client input. Never trust client-supplied prices, roles or user IDs.
+- API DTOs: validation library is **undecided** (Q21: `class-validator`, or a Standard Schema library such as Zod). Decide before writing the first DTO. Never trust client input. Never trust client-supplied prices, roles or user IDs.
 - Database changes go through **Prisma migrations** only. Never edit the database by hand.
 - Order status changes go through **one service method** that enforces the state machine, writes `OrderStatusHistory`, adjusts stock and enqueues side effects (notifications, SMS, sheet sync). No other code may write `Order.status`.
 - Side effects (SMS, Google Sheets, push) are **asynchronous with retries** (outbox pattern). A failed external call must never fail or roll back the order.
@@ -52,18 +54,19 @@ Monorepo (pnpm workspaces). See `docs/FILE_STRUCTURE.md`.
 
 ## 7. Commands
 
-The project is not scaffolded yet. These are the **intended** commands. Update this section when the scaffold exists.
+Available now (run from the repo root):
 
 ```bash
 pnpm install
-pnpm --filter api dev            # NestJS API
-pnpm --filter storefront dev     # Next.js shop
-pnpm --filter portal dev         # React manager and agent app
-pnpm --filter api prisma migrate dev
-pnpm --filter api test
-pnpm -r lint
-pnpm -r typecheck
+pnpm dev:api                  # NestJS API with auto-reload, http://localhost:3000
+pnpm build
+pnpm lint
+pnpm typecheck
+pnpm test                     # unit tests (Vitest)
+pnpm --filter api test:e2e    # API end-to-end tests
 ```
+
+Planned, **not created yet** (update this section when they exist): storefront and portal dev commands, Prisma migrate commands.
 
 ## 8. Definition of done
 

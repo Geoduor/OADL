@@ -2,7 +2,7 @@
 
 Order, assignment and delivery management for a Kenyan logistics and distribution company that sells herbal medicines nationwide through field agents.
 
-> Status: **planning, Phase 1 not started.** Docs version 0.1, written 2026-11-15.
+> Status: **Phase 0 (foundations) in progress.** The workspace and an empty NestJS API exist; no OADL features are built yet. Docs version 0.1, written 2026-11-15.
 > The expansion of the acronym "OADL" has not been confirmed (see `docs/OPEN_QUESTIONS.md`).
 
 ## What it does
@@ -23,6 +23,16 @@ Order, assignment and delivery management for a Kenyan logistics and distributio
 | Manager and agent apps | React (Vite), one app with role-based routes, agent side is a PWA |
 | Hosting | API on Render, storefront on Vercel, database on Render Postgres |
 | FastAPI | Not used in Phase 1. Only if a clear need appears later |
+
+## Getting started
+
+Requirements: Node and pnpm 11.15.0 (pinned in `package.json` through `packageManager`). Per NestJS's docs (checked 2026-11-15), running the app needs Node 20.19+ or 22.12+, and the Nest CLI generators need 22.22.3+, 24.15+ or 26+. The API was scaffolded on Node 24.16.0.
+
+```bash
+pnpm install
+pnpm dev:api        # http://localhost:3000 shows "Hello World!" until we build real routes
+pnpm lint && pnpm typecheck && pnpm test
+```
 
 ## Documentation map
 
