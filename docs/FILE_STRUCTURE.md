@@ -88,6 +88,10 @@ OADL/
    └─ workflows/                # CI: lint, typecheck, test
 ```
 
+## Scaffold status (2026-11-15)
+
+Created so far: root workspace files, `docs/`, and `apps/api` (NestJS 12, ESM, Vitest, oxlint). In `apps/api`, unit tests sit next to the code (`src/*.spec.ts`), end-to-end tests are in `test/*.e2e-spec.ts` with `vitest.config.e2e.ts`. Everything else in the tree above is still the target.
+
 ## Naming conventions
 
 - Files: `kebab-case.ts`; React components: `PascalCase.tsx`.

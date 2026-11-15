@@ -6,7 +6,7 @@ Status: Draft v0.1, 2026-11-15. Platform details below are plans, not verified f
 
 | Environment | API | Storefront | Database |
 |---|---|---|---|
-| Local | `pnpm --filter api dev` | `pnpm --filter storefront dev` | Local PostgreSQL (Docker) or a separate dev database |
+| Local | `pnpm dev:api` | `pnpm --filter storefront dev` (not created yet) | Local PostgreSQL (Docker) or a separate dev database |
 | Staging (recommended) | Render | Vercel preview | Separate Render Postgres (a cheaper plan; free Postgres expires after 30 days) |
 | Production | Render (paid) | Vercel | Render Postgres (paid) |
 
@@ -20,6 +20,7 @@ Status: Draft v0.1, 2026-11-15. Platform details below are plans, not verified f
 6. **Google service account** created and the sheet shared with it.
 7. **Manager account** created with a strong unique password. No default credentials.
 8. **Domains and HTTPS** for the storefront, portal and API.
+9. **Node version and port on Render:** NestJS's docs say the app needs Node 20.19+ or 22.12+; the API is developed on Node 24. Check how Render selects the Node version and which `PORT` it provides (the API already reads `process.env.PORT`), and pin the version so production matches development.
 
 ## Environment variables (names only; never commit values)
 

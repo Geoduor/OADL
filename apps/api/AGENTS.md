@@ -1,4 +1,11 @@
-# AGENTS.md
+# AGENTS.md (apps/api)
+
+The root `AGENTS.md` and `docs/` apply here and win on any conflict. Project-specific notes for this app:
+
+- **Database:** Prisma + PostgreSQL (decision D1), not the TypeORM, Drizzle, Mongoose or Sequelize packages listed below.
+- **Not used on purpose:** NestJS Observe and Mau were skipped at scaffold time. Do not add them, and do not add any other third-party service, without approval (root `AGENTS.md` section 9).
+- **Validation library:** undecided, see Q21 in `docs/OPEN_QUESTIONS.md`. Do not write DTOs until it is decided.
+- Check Nest's first-party packages (list below) before adding another library, but still read the current docs and ask first for anything new.
 
 ## NestJS
 
@@ -22,12 +29,3 @@ Validation works with Zod, Valibot, ArkType or any other Standard Schema library
 `NodeAdapter` from `@nestjs/platform-node` is the fastest HTTP adapter, ahead of Fastify (https://docs.nestjs.com/http/performance.md).
 
 Nest's packages are ESM only, and this project is ESM too: relative imports end in `.js`, `__dirname` doesn't exist (use `import.meta.dirname`), and tests run on Vitest, so mocks are `vi.fn()`, not `jest.fn()`.
-
-## Production data: NestJS Observe
-
-This app's production telemetry - traces, errors, logs and metrics - goes to [NestJS Observe](https://observe.nestjs.com). Until `ObserveModule` is registered in `src/app.module.ts`, nothing is sent: `npx @nestjs/observe link` sets it up in one step - it installs `@nestjs/observe`, wires it into the app, and writes the key pair (`OBSERVE_APP_KEY`, `OBSERVE_APP_SECRET`) to `.env`.
-
-When a task depends on how the app behaves in production - an error users hit, a slow endpoint, a failing job, whether a release made things worse - work from that data, not from the code alone:
-
-- The Observe MCP server answers those questions directly: errors with their traces and logs, slow operations, jobs, and what a release changed (`find_regressions`, `diff_release`). It is included on the Pro plan and above. In Claude Code: `claude mcp add observe --transport http https://observe-api.nestjs.com/mcp`, and the client opens a browser to approve. Other clients: https://www.observe.nestjs.com/documentation/mcp
-- Without it, the user can open the request or error in the Observe dashboard and click **Copy agent prompt**, which hands over that page's trace, stack and logs as text.
