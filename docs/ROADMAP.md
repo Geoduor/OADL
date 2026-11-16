@@ -14,7 +14,7 @@ Suggested build order:
 1. Database schema, migrations and seed (counties, products, prices, manager).
 2. Auth and roles (manager, agent); agent management with county coverage.
 3. Orders: public create endpoint, state machine, history, manager list and detail.
-4. Storefront: product pages with Open Graph tags, order form, confirmation, WhatsApp link.
+4. Storefront: one landing page per product (bundles, order form on the same page, Open Graph tags), confirmation, WhatsApp link, UTM capture, test inside Facebook's in-app browser.
 5. Assignment: manual and auto (county, stock, workload).
 6. Agent portal (PWA): my orders, Dispatched, Delivered with payment, Unresponsive, Rescheduled.
 7. Stock ledger: issue, return, adjust, per-agent view, reservation logic.

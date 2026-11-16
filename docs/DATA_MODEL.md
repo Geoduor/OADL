@@ -24,12 +24,12 @@ Verified sheet tab IDs on 2026-11-15: `0`, `237653016`, `1797378097` (assignment
 `id`, `name` (for example PROSTGUARD), `slug` (unique), `description`, `imageUrl`, `active`, `sortOrder`.
 
 ### ProductPrice (bundle price)
-`id`, `productId`, `quantity`, `priceKes`, `active`. Unique on (`productId`, `quantity`).
+`id`, `productId`, `quantity`, `priceKes`, `compareAtPriceKes` (nullable, display only: the struck-through "was" price, Q25), `active`. Unique on (`productId`, `quantity`). Bundle prices are per product: the example pages shared on 2026-11-15 show different bundle prices from the PROSTGUARD prices in the sheet (Q24).
 Observed in the sheet and to be confirmed (Q2): PROSTGUARD quantity 1 = 3,999; 2 = 5,500; 3 = 7,000. MALACAP quantity 1 = 3,500. SEAMOSS quantity 1 = 3,999 (quantity not shown in the sheet).
 Rule for quantities without a defined price: **not allowed** until Q2 is answered.
 
 ### Order
-`id`, `orderNo` (unique, human readable; proposal `OADL-YYMMDD-####`), `idempotencyKey` (unique, nullable), `source` (`STOREFRONT` | `MANAGER_CREATED`), `customerName`, `customerPhone` (E.164), `countyId`, `addressText` (free text), `status`, `assignedAgentId` (nullable), `scheduledDate` (nullable date; meaning per Q1), `totalKes`, `attemptCount` (default 0), `notes`, `createdAt`, `updatedAt`, `deliveredAt`.
+`id`, `orderNo` (unique, human readable; proposal `OADL-YYMMDD-####`), `idempotencyKey` (unique, nullable), `source` (`STOREFRONT` | `MANAGER_CREATED`), `customerName`, `customerPhone` (E.164), `countyId`, `town` (free text, required), `addressText` (free text, optional; Q26), `landingSlug` (nullable), `utmSource`, `utmMedium`, `utmCampaign`, `utmContent` (all nullable, from the ad link), `status`, `assignedAgentId` (nullable), `scheduledDate` (nullable date; meaning per Q1), `totalKes`, `attemptCount` (default 0), `notes`, `createdAt`, `updatedAt`, `deliveredAt`.
 
 ### OrderItem
 `id`, `orderId`, `productId`, `quantity`, `lineTotalKes`. Price is **copied at purchase time** from `ProductPrice`, so later price edits never change old orders.

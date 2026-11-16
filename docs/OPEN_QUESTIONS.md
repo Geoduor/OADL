@@ -51,3 +51,8 @@ Mark each as answered with a date when resolved.
 | Q20 | Should agents keep editing the sheet by hand after go-live? Recommended no (protected columns), because two writers cause drift | Sheet sync |
 | Q21 | DTO validation approach: `class-validator` or a Standard Schema library such as Zod (Nest's own guidance says both work; Zod could be shared by the storefront, portal and API). Decide before the first DTO | API |
 | Q22 | Does Prisma work with this ESM NestJS 12 scaffold? Not verified. Check Prisma's current docs at the start of the database step; if it does not, regenerate the empty scaffold as CommonJS | Database |
+| Q23 | Storefront language: English, Swahili, or both? (The example pages are in Swahili and English.) | Storefront copy |
+| Q24 | Are any of the example pages the client's own? The example Black Seed / Sea Moss page shows 3,999 / 5,499 / 7,999 for 1 / 2 / 3 units, while the sheet shows PROSTGUARD at 3,999 / 5,500 / 7,000 and SEAMOSS at 3,999. Which bundle prices are correct for each product? | Pricing |
+| Q25 | Does the client want struck-through "was" prices and "Save %" badges? They should show a genuine regular price (advertising and consumer-protection rules in Kenya are not verified here; the client should confirm) | Storefront |
+| Q26 | Minimum order form fields. The examples require name, town and phone, with address optional. We also propose a county dropdown (one tap) so auto-assignment works. Is that acceptable, or must the form be shorter? | Storefront, assignment |
+| Q27 | Who runs the Facebook ads, and what tracking is wanted (Meta Pixel, Conversions API)? Meta's ad rules for health products are not verified here. Tracking needs a privacy review (Q19) and is outside Phase 1 | Marketing, Phase 2 |
