@@ -11,3 +11,31 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+model Product {
+  id          String  @id @default(uuid())
+  name        String
+  slug        String  @unique
+  description String?
+  imageUrl    String?
+  active      Boolean @default(true)
+  sortOrder   Int     @default(0)
+
+  prices ProductPrice[]
+
+  @@map("products")
+}
+
+model ProductPrice {
+  id                String  @id @default(uuid())
+  productId         String
+  quantity          Int
+  priceKes          Int
+  compareAtPriceKes Int?
+  active            Boolean @default(true)
+
+  product Product @relation(fields: [productId], references: [id])
+
+  @@unique([productId, quantity])
+  @@map("product_prices")
+}
