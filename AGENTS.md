@@ -32,6 +32,8 @@ Monorepo (pnpm workspaces). See `docs/FILE_STRUCTURE.md`.
 
 `apps/api` is scaffolded (2026-11-15): NestJS 12, **ESM**, TypeScript strict, Vitest, oxlint. In ESM, relative imports end in `.js`, `__dirname` does not exist (use `import.meta.dirname`), and mocks are `vi.fn()`. See `apps/api/AGENTS.md`. The storefront, portal and shared package are not created yet.
 
+Database layer (D17): **Prisma 7.10.1, pinned**. Never install `prisma@latest` (npm's latest CLI was a release candidate on 2026-11-16). The generated client lives in `apps/api/src/generated/prisma` and is **not committed**: run `pnpm --filter api prisma:generate` after cloning or changing `schema.prisma` (`pnpm build` does it). Use Prisma through `PrismaService` / `PrismaModule`. Run the Prisma CLI as `pnpm exec prisma ...` inside `apps/api`. Use `migrate dev` locally only; production uses `migrate deploy`.
+
 ## 5. Conventions
 
 - TypeScript strict mode everywhere. No `any` without a comment explaining why.
@@ -58,15 +60,18 @@ Available now (run from the repo root):
 
 ```bash
 pnpm install
+pnpm --filter api prisma:generate   # after clone or schema change
 pnpm dev:api                  # NestJS API with auto-reload, http://localhost:3000
 pnpm build
 pnpm lint
 pnpm typecheck
 pnpm test                     # unit tests (Vitest)
-pnpm --filter api test:e2e    # API end-to-end tests
+pnpm --filter api test:e2e    # API end-to-end tests (needs the local database, see README)
 ```
 
-Planned, **not created yet** (update this section when they exist): storefront and portal dev commands, Prisma migrate commands.
+From `apps/api`: `pnpm exec prisma migrate dev --name <change>`, `pnpm exec prisma validate`.
+
+Planned, **not created yet** (update this section when they exist): storefront and portal dev commands, a seed command.
 
 ## 8. Definition of done
 

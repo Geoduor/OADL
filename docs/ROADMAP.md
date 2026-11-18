@@ -3,6 +3,9 @@
 Status: Draft v0.1, 2026-11-15. Phases follow what the developer confirmed. Dates are not set; agree them with the client after the open questions in `OPEN_QUESTIONS.md` are answered.
 
 ## Phase 0: Foundations
+
+**Progress (2026-11-18):** repository, pnpm workspace, NestJS API scaffold, Prisma with PostgreSQL, first migration (products) and a database smoke test are done. Blocking questions Q1 to Q5 and Q7 are still open.
+
 - Create the `OADL` GitHub repository, commit these docs.
 - Scaffold the monorepo, CI, linting, `.env.example`.
 - Answer blocking open questions: Q1 to Q5, Q7.

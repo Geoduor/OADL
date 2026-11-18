@@ -30,9 +30,23 @@ Requirements: Node and pnpm 11.15.0 (pinned in `package.json` through `packageMa
 
 ```bash
 pnpm install
+pnpm --filter api prisma:generate   # creates the Prisma client (not committed); typecheck and the e2e tests need it
 pnpm dev:api        # http://localhost:3000 shows "Hello World!" until we build real routes
 pnpm lint && pnpm typecheck && pnpm test
 ```
+
+### Local database
+
+1. Install PostgreSQL (developed on 18.4; Render supports 18).
+2. As the admin user in `psql`, create a login and a database. `CREATEDB` is needed because `prisma migrate dev` creates a temporary shadow database:
+   ```sql
+   CREATE USER oadl WITH PASSWORD '<your local password>' CREATEDB;
+   CREATE DATABASE oadl_dev OWNER oadl;
+   ```
+3. Copy `apps/api/.env.example` to `apps/api/.env` and set `DATABASE_URL`. Never commit `.env`.
+4. From `apps/api`: `pnpm exec prisma migrate dev` (creates the tables), then `pnpm --filter api test:e2e`.
+
+The database tests refuse to run unless `DATABASE_URL` points at localhost.
 
 ## Documentation map
 

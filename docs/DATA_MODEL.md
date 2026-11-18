@@ -4,6 +4,10 @@ Status: Draft v0.1, 2026-11-15. Conceptual model for Prisma. Field names are pro
 
 Conventions: money is integer KES; phones are E.164; timestamps are UTC; IDs are UUIDs (or cuid, decide at scaffold).
 
+## Implementation status
+
+Implemented in Prisma (migration `add_products`, 2026-11-17): `Product` and `ProductPrice`, with the fields listed below. Every other entity is still design only; each is added with the feature that needs it. IDs are UUID strings (`@default(uuid())`, stored as `TEXT`). Not yet decided: whether all tables get `createdAt` / `updatedAt` columns (Order, history and ledger tables already list their own timestamps).
+
 ## Entities
 
 ### User

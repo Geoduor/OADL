@@ -2,7 +2,9 @@
 
 The root `AGENTS.md` and `docs/` apply here and win on any conflict. Project-specific notes for this app:
 
-- **Database:** Prisma + PostgreSQL (decision D1), not the TypeORM, Drizzle, Mongoose or Sequelize packages listed below.
+- **Database:** Prisma 7.10.1 (pinned, D17) + PostgreSQL, not the TypeORM, Drizzle, Mongoose or Sequelize packages listed below. Import the generated client with a `.js` ending (`../generated/prisma/client.js`). Inject `PrismaService` through `PrismaModule`; do not create other `PrismaClient` instances.
+- **Prisma CLI hints:** always pass `--no-hints` to `prisma generate` (the scripts do). Without it the CLI offers to install AI agent skills and can create `.agents/`, `.claude/`, `.windsurf/` and `skills-lock.json` here. These are not part of OADL; delete them and do not commit them.
+- **Database tests** (`test/*.e2e-spec.ts`) write to the database in `DATABASE_URL` and refuse to run unless it is on localhost. Keep that guard.
 - **Not used on purpose:** NestJS Observe and Mau were skipped at scaffold time. Do not add them, and do not add any other third-party service, without approval (root `AGENTS.md` section 9).
 - **Validation library:** undecided, see Q21 in `docs/OPEN_QUESTIONS.md`. Do not write DTOs until it is decided.
 - Check Nest's first-party packages (list below) before adding another library, but still read the current docs and ask first for anything new.
