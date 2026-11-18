@@ -3,3 +3,8 @@ node_modules
 .env
 
 /src/generated/prisma
+# Created by a Prisma CLI prompt, not part of OADL
+.agents/
+.claude/
+.windsurf/
+skills-lock.json

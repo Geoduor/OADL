@@ -89,7 +89,7 @@ OADL/
 
 ## Scaffold status (2026-11-15)
 
-Created so far: root workspace files, `docs/`, and `apps/api` (NestJS 12, ESM, Vitest, oxlint). In `apps/api`, unit tests sit next to the code (`src/*.spec.ts`), end-to-end tests are in `test/*.e2e-spec.ts` with `vitest.config.e2e.ts`. Everything else in the tree above is still the target.
+Created so far: root workspace files, `docs/`, and `apps/api` (NestJS 12, ESM, Vitest, oxlint, Prisma 7.10.1). In `apps/api`: `prisma/schema.prisma` and `prisma/migrations/` (Product and ProductPrice), `prisma7.config.ts` (the config file name for Prisma 7.10; Prisma 8 accepts only `prisma.config.ts`), `src/prisma/` (PrismaModule, PrismaService), `src/generated/prisma/` (generated, gitignored), `.env.example`. In `apps/api`, unit tests sit next to the code (`src/*.spec.ts`), end-to-end tests are in `test/*.e2e-spec.ts` with `vitest.config.e2e.ts`. Everything else in the tree above is still the target.
 
 ## Naming conventions
 
