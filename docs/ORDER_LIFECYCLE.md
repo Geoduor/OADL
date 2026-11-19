@@ -1,12 +1,13 @@
 # Order Lifecycle
 
-Status: Draft v0.1, 2026-11-15. Statuses `DELIVERED`, `UNRESPONSIVE` and `RESCHEDULED` come from the company's current sheet legend. `PLACED`, `ASSIGNED`, `DISPATCHED` and `CANCELLED` follow the described flow and the agreed design.
+Status: Draft v0.1, 2026-11-15. Statuses `DELIVERED`, `UNRESPONSIVE` and `RESCHEDULED` come from the company's current sheet legend. `PLACED`, `ASSIGNED`, `DISPATCHED` and `CANCELLED` follow the described flow and the agreed design. `CONFIRMED` was added 2026-11-19 (D21); its **name is a proposal** pending the developer's OK.
 
 ## Statuses
 
 | Status | Meaning |
 |---|---|
-| `PLACED` | Order received, not yet assigned |
+| `PLACED` | Order received, not yet phone-confirmed |
+| `CONFIRMED` | Manager phoned the customer and confirmed the order; not yet assigned (D21, name proposed) |
 | `ASSIGNED` | Manager or system assigned an agent |
 | `DISPATCHED` | Agent is on the way to the customer (customer gets an SMS) |
 | `DELIVERED` | Delivered and payment recorded. Final |
@@ -19,7 +20,9 @@ Status: Draft v0.1, 2026-11-15. Statuses `DELIVERED`, `UNRESPONSIVE` and `RESCHE
 ```mermaid
 stateDiagram-v2
     [*] --> PLACED
-    PLACED --> ASSIGNED: manager assigns / auto-assign
+    PLACED --> CONFIRMED: manager confirms by phone
+    CONFIRMED --> ASSIGNED: manager assigns / auto-assign
+    CONFIRMED --> CANCELLED: manager cancels
     PLACED --> CANCELLED: manager cancels
     ASSIGNED --> DISPATCHED: agent
     ASSIGNED --> UNRESPONSIVE: agent
@@ -44,8 +47,9 @@ stateDiagram-v2
 
 | From | To | Who | Requirements |
 |---|---|---|---|
-| PLACED | ASSIGNED | Manager | Agent is active; stock available for all items (auto-assign enforces; manual assign warns and requires manager confirmation to override) |
-| PLACED | CANCELLED | Manager | Reason |
+| PLACED | CONFIRMED | Manager | Manager has phoned the customer (D21) |
+| CONFIRMED | ASSIGNED | Manager | Agent is active; stock available for all items (auto-assign enforces; manual assign warns and requires manager confirmation to override) |
+| PLACED, CONFIRMED | CANCELLED | Manager | Reason |
 | ASSIGNED | DISPATCHED | Assigned agent | Triggers customer SMS |
 | ASSIGNED, DISPATCHED, UNRESPONSIVE | RESCHEDULED | Assigned agent or manager | New date required |
 | DISPATCHED | DELIVERED | Assigned agent | Payment method and amount required; stock deducted |
@@ -62,6 +66,7 @@ Anything not listed is rejected. `DELIVERED` and `CANCELLED` are final; correcti
 | Transition | Side effects |
 |---|---|
 | to PLACED | Manager notification; stored notification |
+| to CONFIRMED | Stored history entry only (no SMS or sheet row yet; UNCONFIRMED) |
 | to ASSIGNED | Agent notification; sheet row created or updated |
 | to DISPATCHED | Customer SMS (outbox); sheet update |
 | to DELIVERED | Payment row; stock movement; `deliveredAt`; sheet update (status DELIVERED) |
@@ -72,6 +77,6 @@ All of these run inside one service method; external effects are queued in the o
 
 ## Open points
 
-- Whether the manager must phone-confirm orders before assigning (Q16).
+- Q16 is answered (D21): confirmation is required. Still open: what the manager does when the customer cannot be reached at confirmation, whether the client agrees, and the final status name.
 - Cancellation, refusal and return policy (Q15).
 - Sheet text for `ASSIGNED` and `DISPATCHED` (Q17).

@@ -18,7 +18,7 @@ Status: Draft v0.1, 2026-11-15. Items depending on open questions are tagged wit
 
 - US-1: Each product has its own **mobile landing page** (one URL per product slug) that a Facebook ad can link to directly: product name and images, price, bundle selector, the order form, a short benefits section, and a clear "pay on delivery" note. Copy must be approved by the client (Q14).
 - US-2: As a customer I can choose a bundle (for example 1, 2 or 3 units) and see the total in KES update. Only defined bundles are offered (Q2). A struck-through "was" price and a "Save %" badge are optional and depend on Q25.
-- US-3: As a customer I can order from the **same page** with as few fields as possible: full name, phone, county (dropdown, needed for auto-assignment) and town, plus an optional address or landmark (Q26). The button states that payment is on delivery.
+- US-3: As a customer I can order from the **same page** with as few fields as possible: full name, phone, county (dropdown, needed for auto-assignment) and a free-text location (D20). The button states that payment is on delivery.
 - US-4: As a customer I see a confirmation with my order number and what happens next (the company will call to confirm, Q16).
 - US-5: As a customer I can tap "Talk to us" to open WhatsApp with the manager and a pre-filled message (Q9).
 - US-6: Product pages carry Open Graph tags (for organic shares) and load fast on mobile data, because ad traffic arrives on phones.

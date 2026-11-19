@@ -1,6 +1,6 @@
 # Decisions and Open Questions
 
-Last updated: 2026-11-15. This file is the register of what is confirmed and what is not. Move an item from "Open" to "Confirmed" only when the client or developer has said so, and record the date.
+Last updated: 2026-11-19. This file is the register of what is confirmed and what is not. Move an item from "Open" to "Confirmed" only when the client or developer has said so, and record the date.
 
 ## Confirmed decisions
 
@@ -23,6 +23,9 @@ Last updated: 2026-11-15. This file is the register of what is confirmed and wha
 | D16 | API scaffold: NestJS 12, ESM module system, Vitest, oxlint, TypeScript strict. NestJS Observe and Mau were deliberately **not** adopted | Developer, 2026-11-15 |
 | D17 | Database layer: **Prisma 7.10.1, pinned** for `prisma`, `@prisma/client` and `@prisma/adapter-pg` (with `pg`). Verified 2026-11-18 on the developer's machine: migrations apply, the generated client works inside the ESM NestJS 12 app under Vitest (e2e test reads and writes a product), and `prisma generate` works without `DATABASE_URL`. **Do not use `prisma@latest`:** on 2026-11-16 npm's `latest` tag for the CLI was `8.0.0-rc.34` (a release candidate) while `@prisma/client` latest was stable 7.10.1. Upgrade to Prisma 8 only after it is stable and the upgrade guide has been followed | Developer, verified by test |
 | D18 | Local development uses PostgreSQL 18.4. Render's docs list 18 as fully supported and its changelog says 18 became the default for new databases on 2025-11-13 (checked 2026-11-16). Match the Render version when the database is created | Developer; Render docs |
+| D19 | API request validation uses **Zod** (a Standard Schema library) through Nest's `StandardSchemaValidationPipe`. Adds `zod` as a dependency (pin the exact version) | Developer, 2026-11-19 (answers Q21) |
+| D20 | Customer order form fields: full name, phone, county (dropdown) and location (free text), plus product and bundle. Single free-text location vs the `town` + optional address split in `DATA_MODEL.md` is to be reconciled when the Order model is written | Developer, 2026-11-19 (answers Q26) |
+| D21 | The manager **phone-confirms each order before assigning it**: a new status sits between `PLACED` and `ASSIGNED`. The name `CONFIRMED` is a **proposal** pending the developer's OK. Not yet confirmed with the client; what happens when the customer cannot be reached at confirmation is open (see Q15) | Developer, 2026-11-19 (answers Q16) |
 | D15 | Sheet "OADL-AGENTS SHEET ORDERS" has 3 tabs: `JEOFREY -NAIROBI`, `ANDY COLE-COAST`, `BRAMUEL -KSM & OTHERS` (verified via the Sheets connector) | Verified 2026-11-15 |
 
 ## Open questions
@@ -46,16 +49,16 @@ Mark each as answered with a date when resolved.
 | Q13 | Does the storefront block or warn when the covering agent is out of stock? | Storefront |
 | Q14 | Product copy for the storefront (descriptions, images, any allowed claims). The client should approve all wording | Storefront |
 | Q15 | Policy for cancellations, returns and refused deliveries | Order lifecycle |
-| Q16 | Does the manager phone-confirm each order before assigning? (recommended to limit fake orders, not confirmed) | Order flow |
+| Q16 | Does the manager phone-confirm each order before assigning? (recommended to limit fake orders, not confirmed) **Answered 2026-11-19, see D21.** | Order flow |
 | Q17 | In the sheet, what should non-final statuses (Assigned, Dispatched) look like? Working assumption: leave the status cell blank, as today | Sheet sync |
 | Q18 | What does "OADL" stand for? Branding, logo and domain name | README, storefront |
 | Q19 | Data retention period for customer data and registration obligations under Kenya's Data Protection Act (company to confirm) | Compliance |
 | Q20 | Should agents keep editing the sheet by hand after go-live? Recommended no (protected columns), because two writers cause drift | Sheet sync |
-| Q21 | DTO validation approach: `class-validator` or a Standard Schema library such as Zod (Nest's own guidance says both work; Zod could be shared by the storefront, portal and API). Decide before the first DTO | API |
+| Q21 | DTO validation approach: `class-validator` or a Standard Schema library such as Zod (Nest's own guidance says both work; Zod could be shared by the storefront, portal and API). Decide before the first DTO **Answered 2026-11-19, see D19.** | API |
 | Q22 | **ANSWERED 2026-11-18, see D17.** Does Prisma work with this ESM NestJS 12 scaffold? | Database |
 | Q23 | Storefront language: English, Swahili, or both? (The example pages are in Swahili and English.) | Storefront copy |
 | Q24 | Are any of the example pages the client's own? The example Black Seed / Sea Moss page shows 3,999 / 5,499 / 7,999 for 1 / 2 / 3 units, while the sheet shows PROSTGUARD at 3,999 / 5,500 / 7,000 and SEAMOSS at 3,999. Which bundle prices are correct for each product? | Pricing |
 | Q25 | Does the client want struck-through "was" prices and "Save %" badges? They should show a genuine regular price (advertising and consumer-protection rules in Kenya are not verified here; the client should confirm) | Storefront |
-| Q26 | Minimum order form fields. The examples require name, town and phone, with address optional. We also propose a county dropdown (one tap) so auto-assignment works. Is that acceptable, or must the form be shorter? | Storefront, assignment |
+| Q26 | Minimum order form fields. The examples require name, town and phone, with address optional. We also propose a county dropdown (one tap) so auto-assignment works. Is that acceptable, or must the form be shorter? **Answered 2026-11-19, see D20.** | Storefront, assignment |
 | Q27 | Who runs the Facebook ads, and what tracking is wanted (Meta Pixel, Conversions API)? Meta's ad rules for health products are not verified here. Tracking needs a privacy review (Q19) and is outside Phase 1 | Marketing, Phase 2 |
 | Q28 | Which Render region for the API and database (closest to Kenyan users)? Available regions and latency were not checked | Deployment |

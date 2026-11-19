@@ -8,7 +8,7 @@ The root `AGENTS.md` and `docs/` apply here and win on any conflict. Project-spe
 - **Writing database tests:** each test creates its own rows with a unique slug or name, asserts only on its own rows (test files run in parallel against one database), and deletes them in `afterAll`. Any test that imports `AppModule` now needs the local database running.
 - **Seeding:** `pnpm exec prisma db seed` runs `prisma/seed.ts` through `tsx` (dev dependency, exact version pinned; approved by the developer 2026-11-19). `esbuild`, a dependency of `tsx`, is allowed to run its install script in `pnpm-workspace.yaml`. The seed uses `upsert` with an empty update, so it never overwrites edits. The config file is `prisma.config.ts`.
 - **Not used on purpose:** NestJS Observe and Mau were skipped at scaffold time. Do not add them, and do not add any other third-party service, without approval (root `AGENTS.md` section 9).
-- **Validation library:** undecided, see Q21 in `docs/OPEN_QUESTIONS.md`. Do not write DTOs until it is decided.
+- **Validation library:** Zod (D19 in `docs/OPEN_QUESTIONS.md`), used through `StandardSchemaValidationPipe`. Read the current Nest validation docs and Zod docs before writing the first schema.
 - Check Nest's first-party packages (list below) before adding another library, but still read the current docs and ask first for anything new.
 
 ## NestJS
