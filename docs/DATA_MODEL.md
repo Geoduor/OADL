@@ -84,4 +84,6 @@ Stock is deducted only when an order becomes `DELIVERED`.
 
 ## Seed data (development)
 
+**Implemented so far:** `apps/api/prisma/seed.ts` seeds only PROSTGUARD and its three bundles (1, 2 and 3 units at 3,999, 5,500 and 7,000 KES). It uses `upsert` with an empty update, so re-running it never overwrites later edits. Description, image and compare-at price are left empty until the client approves them (Q14, Q25). The rest of this section is still planned.
+
 Counties, the products listed above with their observed bundle prices (flagged as unconfirmed), one manager user, and test agents with fake names and numbers. **Never seed real customer data.**

@@ -70,9 +70,9 @@ pnpm test                     # unit tests (Vitest)
 pnpm --filter api test:e2e    # API end-to-end tests (needs the local database, see README)
 ```
 
-From `apps/api`: `pnpm exec prisma migrate dev --name <change>`, `pnpm exec prisma validate`.
+From `apps/api`: `pnpm exec prisma migrate dev --name <change>`, `pnpm exec prisma validate`, `pnpm exec prisma db seed` (seeds PROSTGUARD only; safe to run repeatedly).
 
-Planned, **not created yet** (update this section when they exist): storefront and portal dev commands, a seed command.
+Planned, **not created yet** (update this section when they exist): storefront and portal dev commands.
 
 ## 8. Definition of done
 
