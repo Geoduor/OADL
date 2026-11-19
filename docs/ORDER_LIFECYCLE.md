@@ -21,6 +21,7 @@ Status: Draft v0.1, 2026-11-15. Statuses `DELIVERED`, `UNRESPONSIVE` and `RESCHE
 stateDiagram-v2
     [*] --> PLACED
     PLACED --> CONFIRMED: manager confirms by phone
+    PLACED --> UNRESPONSIVE: manager cannot reach customer
     CONFIRMED --> ASSIGNED: manager assigns / auto-assign
     CONFIRMED --> CANCELLED: manager cancels
     PLACED --> CANCELLED: manager cancels
@@ -48,6 +49,7 @@ stateDiagram-v2
 | From | To | Who | Requirements |
 |---|---|---|---|
 | PLACED | CONFIRMED | Manager | Manager has phoned the customer (D21) |
+| PLACED | UNRESPONSIVE | Manager | Customer could not be reached at confirmation (D21). Increments `attemptCount` |
 | CONFIRMED | ASSIGNED | Manager | Agent is active; stock available for all items (auto-assign enforces; manual assign warns and requires manager confirmation to override) |
 | PLACED, CONFIRMED | CANCELLED | Manager | Reason |
 | ASSIGNED | DISPATCHED | Assigned agent | Triggers customer SMS |
@@ -77,6 +79,6 @@ All of these run inside one service method; external effects are queued in the o
 
 ## Open points
 
-- Q16 is answered (D21): confirmation is required. Still open: what the manager does when the customer cannot be reached at confirmation, whether the client agrees, and the final status name.
+- Q16 is answered (D21): confirmation is required. Unreachable at confirmation ends in `UNRESPONSIVE` (developer, 2026-11-19). Still open: how an order leaves `UNRESPONSIVE` when it never had an agent (a retry back to `PLACED` is UNCONFIRMED; the diagram's `UNRESPONSIVE --> DISPATCHED` assumes an agent), whether the client agrees, and the final status name.
 - Cancellation, refusal and return policy (Q15).
 - Sheet text for `ASSIGNED` and `DISPATCHED` (Q17).
