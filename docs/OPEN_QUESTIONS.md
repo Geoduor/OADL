@@ -32,7 +32,7 @@ Mark each as answered with a date when resolved.
 | ID | Question | Blocks |
 |---|---|---|
 | Q1 | Is sheet column A the **delivery date** (scheduled) or the order date? Rows with future dates and blank status exist. Working assumption: scheduled delivery date | Sheet mapping |
-| Q2 | Full product list (5 to 10) with prices. Observed only: PROSTGUARD 3,999 / 2 for 5,500 / 3 for 7,000; MALACAP 3,500; SEAMOSS 3,999. What is the rule for **quantities above the listed bundles** (for example 4 PROSTGUARD)? Until answered, the storefront offers only defined bundle sizes | Pricing, storefront |
+| Q2 | Full product list (5 to 10) with prices. Observed only: PROSTGUARD 3,999 / 2 for 5,500 / 3 for 7,000; MALACAP 3,500; SEAMOSS 3,999. What is the rule for **quantities above the listed bundles** (for example 4 PROSTGUARD)? Until answered, the storefront offers only defined bundle sizes. **2026-11-19:** the seed loads PROSTGUARD only, by the developer's decision; the other products are added when their details arrive | Pricing, storefront |
 | Q3 | Is "PROATGUARD" in the sheet a typo of PROSTGUARD? | Product seed data |
 | Q4 | Which counties does each agent cover? Are there agents beyond the 3 tabs? What happens to a county with no agent (working assumption: manager queue as "unassigned")? | Auto-assignment |
 | Q5 | The improved Google Sheet (header row, Order ID column, status values). Until it arrives, `docs/INTEGRATIONS.md` describes a **proposed** layout | Sheet sync |

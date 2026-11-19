@@ -44,7 +44,7 @@ pnpm lint && pnpm typecheck && pnpm test
    CREATE DATABASE oadl_dev OWNER oadl;
    ```
 3. Copy `apps/api/.env.example` to `apps/api/.env` and set `DATABASE_URL`. Never commit `.env`.
-4. From `apps/api`: `pnpm exec prisma migrate dev` (creates the tables), then `pnpm --filter api test:e2e`.
+4. From `apps/api`: `pnpm exec prisma migrate dev` (creates the tables), then `pnpm exec prisma db seed` (adds PROSTGUARD and its bundle prices; safe to repeat), then `pnpm --filter api test:e2e`.
 
 The database tests refuse to run unless `DATABASE_URL` points at localhost.
 
