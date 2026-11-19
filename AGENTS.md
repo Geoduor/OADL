@@ -42,6 +42,7 @@ Database layer (D17): **Prisma 7.10.1, pinned**. Never install `prisma@latest` (
 - Timestamps are stored in **UTC**; display in `Africa/Nairobi`.
 - API DTOs: validation library is **undecided** (Q21: `class-validator`, or a Standard Schema library such as Zod). Decide before writing the first DTO. Never trust client input. Never trust client-supplied prices, roles or user IDs.
 - Database changes go through **Prisma migrations** only. Never edit the database by hand.
+- Public API responses use an explicit Prisma `select` allow-list, never a whole row, so a new internal column cannot leak (see `apps/api/src/products/products.service.ts`).
 - Order status changes go through **one service method** that enforces the state machine, writes `OrderStatusHistory`, adjusts stock and enqueues side effects (notifications, SMS, sheet sync). No other code may write `Order.status`.
 - Side effects (SMS, Google Sheets, push) are **asynchronous with retries** (outbox pattern). A failed external call must never fail or roll back the order.
 - Authorisation is enforced **on the server** with guards. An agent can only read and change orders assigned to them.

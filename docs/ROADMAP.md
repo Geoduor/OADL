@@ -6,6 +6,8 @@ Status: Draft v0.1, 2026-11-15. Phases follow what the developer confirmed. Date
 
 **Progress (2026-11-18):** repository, pnpm workspace, NestJS API scaffold, Prisma with PostgreSQL, first migration (products) and a database smoke test are done. Blocking questions Q1 to Q5 and Q7 are still open.
 
+**Phase 1 progress (2026-11-19):** public catalogue endpoints (`GET /products`, `GET /products/:slug`) built and covered by e2e tests. Seed data waits for Q2 and Q24; order creation is next after the seed.
+
 - Create the `OADL` GitHub repository, commit these docs.
 - Scaffold the monorepo, CI, linting, `.env.example`.
 - Answer blocking open questions: Q1 to Q5, Q7.

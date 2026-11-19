@@ -1,16 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PrismaModule } from '../src/prisma/prisma.module.js';
 import { PrismaService } from '../src/prisma/prisma.service.js';
+import { assertLocalDatabase } from './support/local-database.js';
 
 describe('PrismaService (e2e)', () => {
   let moduleRef: TestingModule;
   let prisma: PrismaService;
 
   beforeAll(async () => {
-    const url = process.env.DATABASE_URL ?? '';
-    if (!/@(localhost|127\.0\.0\.1)[:/]/.test(url)) {
-      throw new Error('Refusing to run database tests on a non-local database');
-    }
+    assertLocalDatabase();
     moduleRef = await Test.createTestingModule({
       imports: [PrismaModule],
     }).compile();
