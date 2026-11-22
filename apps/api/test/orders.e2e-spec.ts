@@ -1,10 +1,11 @@
 import { randomUUID } from 'node:crypto';
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
+import { BadRequestException, INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { App } from 'supertest/types.js';
 import { AppModule } from '../src/app.module.js';
 import { PrismaService } from '../src/prisma/prisma.service.js';
+import { TurnstileService } from '../src/turnstile/turnstile.service.js';
 import { assertLocalDatabase } from './support/local-database.js';
 
 type OrderJson = {
@@ -22,9 +23,12 @@ describe('POST /orders (e2e)', () => {
   let countyId: string;
   let productId: string;
   let hiddenProductId: string;
+  // Cloudflare is not called in tests; see turnstile.service.spec.ts.
+  const verify = vi.fn();
 
   const body = (overrides: Record<string, unknown> = {}) => ({
     idempotencyKey: randomUUID(),
+    turnstileToken: 'XXXX.DUMMY.TOKEN.XXXX',
     customerName: 'Test Customer',
     customerPhone: '0700 000 000',
     countyId,
@@ -35,9 +39,13 @@ describe('POST /orders (e2e)', () => {
 
   beforeAll(async () => {
     assertLocalDatabase();
+    verify.mockResolvedValue(undefined);
     const moduleRef: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
-    }).compile();
+    })
+      .overrideProvider(TurnstileService)
+      .useValue({ verify })
+      .compile();
     app = moduleRef.createNestApplication();
     await app.init();
     prisma = moduleRef.get(PrismaService);
@@ -183,6 +191,40 @@ describe('POST /orders (e2e)', () => {
       .send(body({ customerPhone: '12345' }))
       .expect(400);
     expect(JSON.stringify(response.body)).not.toContain('12345');
+  });
+
+  it('does not check Turnstile again for a repeated idempotency key', async () => {
+    verify.mockClear();
+    const payload = body();
+    await request(app.getHttpServer())
+      .post('/orders')
+      .send(payload)
+      .expect(201);
+    await request(app.getHttpServer())
+      .post('/orders')
+      .send(payload)
+      .expect(201);
+    expect(verify).toHaveBeenCalledTimes(1);
+  });
+
+  it('refuses the order and saves nothing when the bot check fails', async () => {
+    verify.mockRejectedValueOnce(new BadRequestException('Bot check failed'));
+    const payload = body();
+    await request(app.getHttpServer())
+      .post('/orders')
+      .send(payload)
+      .expect(400);
+    const count = await prisma.order.count({
+      where: { idempotencyKey: payload.idempotencyKey },
+    });
+    expect(count).toBe(0);
+  });
+
+  it('rejects a missing bot-check token', async () => {
+    await request(app.getHttpServer())
+      .post('/orders')
+      .send(body({ turnstileToken: undefined }))
+      .expect(400);
   });
 
   it('rejects a missing idempotency key', async () => {

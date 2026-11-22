@@ -2,6 +2,7 @@ import { createOrderSchema } from './create-order.schema.js';
 
 const valid = {
   idempotencyKey: '3f1c1c0e-5f55-4d7e-9a4e-2f0f6b0c9a11',
+  turnstileToken: 'XXXX.DUMMY.TOKEN.XXXX',
   customerName: 'Test Customer',
   customerPhone: '0712 345 678',
   countyId: '7d5e2d9a-0b7c-4a62-8f1e-5b8d3c2a1e90',
@@ -30,6 +31,11 @@ describe('createOrderSchema', () => {
   it.each([
     ['a bad phone', { customerPhone: '12345' }],
     ['a missing idempotency key', { idempotencyKey: undefined }],
+    ['a missing bot-check token', { turnstileToken: undefined }],
+    [
+      'a bot-check token over 2048 characters',
+      { turnstileToken: 'x'.repeat(2049) },
+    ],
     ['a non-uuid county', { countyId: 'nairobi' }],
     ['no items', { items: [] }],
     ['a zero quantity', { items: [{ ...valid.items[0], quantity: 0 }] }],

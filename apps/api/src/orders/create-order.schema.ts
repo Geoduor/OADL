@@ -9,6 +9,8 @@ const optionalText = z.string().trim().min(1).max(200).optional();
 
 export const createOrderSchema = z.object({
   idempotencyKey: z.uuid(),
+  // Cloudflare Turnstile token from the widget; max length 2048 per Cloudflare.
+  turnstileToken: z.string().min(1).max(2048),
   customerName: z.string().trim().min(2).max(100),
   customerPhone: z
     .string()

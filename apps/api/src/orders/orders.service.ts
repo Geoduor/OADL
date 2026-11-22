@@ -1,6 +1,8 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
 import type { CreateOrderInput } from './create-order.schema.js';
+
+export type NewOrder = Omit<CreateOrderInput, 'turnstileToken'>;
 import { generateOrderNo } from './order-number.js';
 
 // Only these fields go back to the customer. Never return a whole row.
@@ -37,7 +39,7 @@ export class OrdersService {
   // Initial status is PLACED. Later status changes belong to the state
   // machine service (docs/ORDER_LIFECYCLE.md), which does not exist yet.
   // TODO(confirm): manager notification and sheet sync are not built yet.
-  async create(input: CreateOrderInput) {
+  async create(input: NewOrder) {
     const existing = await this.findByIdempotencyKey(input.idempotencyKey);
     if (existing) {
       return this.toResponse(existing);
@@ -117,6 +119,13 @@ export class OrdersService {
       }
     }
     throw new Error('Could not allocate an order number');
+  }
+
+  // Used before the bot check so a double tap returns the first order
+  // instead of failing on a spent Turnstile token.
+  async findExisting(idempotencyKey: string) {
+    const existing = await this.findByIdempotencyKey(idempotencyKey);
+    return existing ? this.toResponse(existing) : null;
   }
 
   private findByIdempotencyKey(idempotencyKey: string) {
