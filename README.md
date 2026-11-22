@@ -43,7 +43,7 @@ pnpm lint && pnpm typecheck && pnpm test
    CREATE USER oadl WITH PASSWORD '<your local password>' CREATEDB;
    CREATE DATABASE oadl_dev OWNER oadl;
    ```
-3. Copy `apps/api/.env.example` to `apps/api/.env` and set `DATABASE_URL`. Never commit `.env`.
+3. Copy `apps/api/.env.example` to `apps/api/.env` and set `DATABASE_URL`. To try `POST /orders` by hand, also set `CAPTCHA_SECRET` to Cloudflare's public test secret `1x0000000000000000000000000000000AA` (always passes) and send the token `XXXX.DUMMY.TOKEN.XXXX`; both come from [Cloudflare's testing page](https://developers.cloudflare.com/turnstile/troubleshooting/testing/). Never commit `.env`, and never use the test secret in production.
 4. From `apps/api`: `pnpm exec prisma migrate dev` (creates the tables), then `pnpm exec prisma db seed` (adds PROSTGUARD and its bundle prices; safe to repeat), then `pnpm --filter api test:e2e`.
 
 The database tests refuse to run unless `DATABASE_URL` points at localhost.

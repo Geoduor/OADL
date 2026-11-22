@@ -53,7 +53,7 @@ Roles are enforced with NestJS guards and checked against the database record, n
 
 ### 4.1 Customer places an order
 1. Storefront submits name, phone, county, free-text location, items (product and bundle quantity) and an **idempotency key** (a UUID it generates). Landing slug and UTM values are optional.
-2. API validates input with Zod, recomputes the price from the database (client prices are ignored), normalises the phone to E.164 (Kenyan mobiles only: `+254` then 9 digits starting with 7 or 1). Only defined, active bundles are accepted (Q2). A repeated idempotency key returns the first order.
+2. API validates input with Zod, recomputes the price from the database (client prices are ignored), normalises the phone to E.164 (Kenyan mobiles only: `+254` then 9 digits starting with 7 or 1). Only defined, active bundles are accepted (Q2). A repeated idempotency key returns the first order **before** the bot check runs (Turnstile tokens are single use). Cheapest checks run first: rate limit, schema validation, repeat submit, Turnstile verification (server side, fails closed), then the database.
 3. Creates `Order` (status `PLACED`) with `OrderItem` rows and copies prices into them. Writes `OrderStatusHistory`.
 4. Emits a real-time event to online managers and stores a `Notification`.
 5. Returns the order number.

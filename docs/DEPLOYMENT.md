@@ -12,7 +12,7 @@ Status: Draft v0.1, 2026-11-15. Platform details below are plans, not verified f
 
 ## Before go-live (blocking items)
 
-0. **Public order endpoint protection:** `POST /orders` exists but has **no rate limiting or bot protection yet**. Do not expose the API publicly until both are in place (AGENTS.md section 6).
+0. **Public order endpoint protection:** `POST /orders` is rate limited (10 a minute per IP, 120 a minute for other routes, in memory, so correct for **one** API instance only) and verified with Cloudflare Turnstile. Before go-live: (a) **set `TRUST_PROXY` correctly.** Behind Render's proxy every visitor otherwise looks like the same IP and shares one limit, so real customers get blocked together. Read Render's current documentation and test with two phones; the right value is UNVERIFIED. (b) Create the Turnstile widget with the production hostnames and set `CAPTCHA_SECRET` and the site key. (c) Check Turnstile's current pricing and limits (UNVERIFIED). (d) Tune the limits with real ad traffic: many Kenyan mobile users can share one public IP. (e) If the API ever runs on more than one instance, move the rate-limit store out of memory.
 1. **Plan terms (Q7):** the API must run on a **paid, always-on Render instance** (free instances sleep after 15 minutes, which would break real-time pop-ups and the outbox worker), and the database must be a **paid Postgres** (Render's free Postgres expires after 30 days and has no backups). Read Vercel's Terms of Service fair-use section to confirm the plan used for the storefront and portal is allowed for a commercial site.
 2. **Backups:** confirm what backups the chosen database plan includes and test a restore.
 3. **Prisma and Render Postgres:** read current documentation on connection strings (internal vs external URL), connection limits and migrations on Render before configuring `DATABASE_URL`. Region choice (closest to Kenya that Render offers) is to be checked (Q28). Production applies migrations with `prisma migrate deploy`, never `migrate dev` (this is Prisma's usual production command; confirm it in the current docs and decide where it runs on Render, for example a pre-deploy step).
@@ -44,6 +44,7 @@ Status: Draft v0.1, 2026-11-15. Platform details below are plans, not verified f
 | `NEXT_PUBLIC_CAPTCHA_SITE_KEY` | storefront | Public Turnstile site key |
 | `NEXT_PUBLIC_WHATSAPP_NUMBER` | storefront | Manager WhatsApp number (digits only) |
 | `VITE_API_URL` | portal | API base URL |
+| `TRUST_PROXY` | api | How many proxies, or which addresses, to trust for the client IP (Express `trust proxy`). **UNVERIFIED value for Render**; see go-live item 0 |
 | `NODE_ENV`, `PORT`, `TZ` | api | Runtime (`TZ` optional; the app stores UTC) |
 
 Keep `.env.example` in sync with this table.
