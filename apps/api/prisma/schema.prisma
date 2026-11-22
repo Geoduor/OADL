@@ -64,7 +64,8 @@ model County {
   name String @unique
   code Int    @unique
 
-  orders Order[]
+  orders  Order[]
+  agents  AgentCounty[]
 
   @@map("counties")
 }
@@ -158,6 +159,7 @@ model User {
   role         UserRole
   status       UserStatus @default(PENDING)
   createdAt    DateTime   @default(now())
+  agent        Agent?
 
   @@map("users")
 }
@@ -180,3 +182,30 @@ model Session {
   @@map("sessions")
 }
 
+
+// A field agent's working profile. Created when the manager approves the
+// agent's registration (D26). `active` controls whether the agent receives
+// assignments; it is separate from User.status (can the account sign in).
+model Agent {
+  id          String        @id @default(uuid())
+  userId      String        @unique
+  user        User          @relation(fields: [userId], references: [id])
+  displayName String
+  active      Boolean       @default(true)
+  counties    AgentCounty[]
+  createdAt   DateTime      @default(now())
+
+  @@map("agents")
+}
+
+// Which counties an agent covers. The manager sets them at approval.
+// Several agents may cover one county (Q4 is still open on the real mapping).
+model AgentCounty {
+  agentId  String
+  agent    Agent  @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  countyId String
+  county   County @relation(fields: [countyId], references: [id])
+
+  @@id([agentId, countyId])
+  @@map("agent_counties")
+}
