@@ -34,9 +34,12 @@ export class PrismaAuthenticationStore implements SessionStore {
   }
 
   async createSession(record: SessionRecord): Promise<void> {
-    // Keeps the table bounded: expired sessions go when a new one is saved.
+    // Keeps the table bounded: sessions past their absolute expiry go when a
+    // new one is saved. "Now" is the new session's createdAt, which is the
+    // package's clock (the same instant in production, a fixed one in the
+    // package's contract tests).
     await this.prisma.session.deleteMany({
-      where: { expiresAt: { lt: new Date() } },
+      where: { expiresAt: { lte: record.createdAt } },
     });
     await this.prisma.session.create({
       data: {
