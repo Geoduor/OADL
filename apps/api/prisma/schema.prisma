@@ -21,7 +21,8 @@ model Product {
   active      Boolean @default(true)
   sortOrder   Int     @default(0)
 
-  prices ProductPrice[]
+  prices     ProductPrice[]
+  orderItems OrderItem[]
 
   @@map("products")
 }
@@ -38,4 +39,97 @@ model ProductPrice {
 
   @@unique([productId, quantity])
   @@map("product_prices")
+}
+
+// Statuses follow docs/ORDER_LIFECYCLE.md. CONFIRMED is a proposed name (D21).
+enum OrderStatus {
+  PLACED
+  CONFIRMED
+  ASSIGNED
+  DISPATCHED
+  DELIVERED
+  UNRESPONSIVE
+  RESCHEDULED
+  CANCELLED
+}
+
+enum OrderSource {
+  STOREFRONT
+  MANAGER_CREATED
+}
+
+// Kenya's 47 counties, seeded from the First Schedule of the Constitution.
+model County {
+  id   String @id @default(uuid())
+  name String @unique
+  code Int    @unique
+
+  orders Order[]
+
+  @@map("counties")
+}
+
+// Agent assignment and agent-related fields come with the User and Agent models.
+model Order {
+  id             String      @id @default(uuid())
+  orderNo        String      @unique
+  idempotencyKey String?     @unique
+  source         OrderSource @default(STOREFRONT)
+  customerName   String
+  customerPhone  String
+  countyId       String
+  location       String
+  landingSlug    String?
+  utmSource      String?
+  utmMedium      String?
+  utmCampaign    String?
+  utmContent     String?
+  status         OrderStatus @default(PLACED)
+  scheduledDate  DateTime?   @db.Date
+  totalKes       Int
+  attemptCount   Int         @default(0)
+  notes          String?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  deliveredAt    DateTime?
+
+  county  County               @relation(fields: [countyId], references: [id])
+  items   OrderItem[]
+  history OrderStatusHistory[]
+
+  @@index([status])
+  @@index([countyId])
+  @@index([createdAt])
+  @@map("orders")
+}
+
+// Price is copied from ProductPrice at purchase time (docs/DATA_MODEL.md).
+model OrderItem {
+  id           String @id @default(uuid())
+  orderId      String
+  productId    String
+  quantity     Int
+  lineTotalKes Int
+
+  order   Order   @relation(fields: [orderId], references: [id])
+  product Product @relation(fields: [productId], references: [id])
+
+  @@index([orderId])
+  @@index([productId])
+  @@map("order_items")
+}
+
+// Append-only. changedByUserId is added with the User model.
+model OrderStatusHistory {
+  id         String       @id @default(uuid())
+  orderId    String
+  fromStatus OrderStatus?
+  toStatus   OrderStatus
+  reason     String?
+  createdAt  DateTime     @default(now())
+
+  order Order @relation(fields: [orderId], references: [id])
+
+  @@index([orderId, createdAt])
+  @@map("order_status_history")
 }

@@ -6,7 +6,7 @@ Conventions: money is integer KES; phones are E.164; timestamps are UTC; IDs are
 
 ## Implementation status
 
-Implemented in Prisma (migration `add_products`, 2026-11-17): `Product` and `ProductPrice`, with the fields listed below. Every other entity is still design only; each is added with the feature that needs it. IDs are UUID strings (`@default(uuid())`, stored as `TEXT`). Not yet decided: whether all tables get `createdAt` / `updatedAt` columns (Order, history and ledger tables already list their own timestamps).
+Implemented in Prisma: `Product` and `ProductPrice` (migration `add_products`, 2026-11-17) and `County`, `Order`, `OrderItem` and `OrderStatusHistory` (migration `add_orders`, 2026-11-22). Every other entity is still design only; each is added with the feature that needs it. Deferred from the order tables until their models exist: `Order.assignedAgentId` (with `Agent`) and `OrderStatusHistory.changedByUserId` (with `User`). `OrderStatus` has the eight values in `ORDER_LIFECYCLE.md`, including the proposed `CONFIRMED`. IDs are UUID strings (`@default(uuid())`, stored as `TEXT`). Not yet decided: whether all tables get `createdAt` / `updatedAt` columns (Order, history and ledger tables already list their own timestamps).
 
 ## Entities
 
@@ -19,7 +19,7 @@ At least one of email or phone is required and unique.
 Verified sheet tab IDs on 2026-11-15: `0`, `237653016`, `1797378097` (assignment to agents to be confirmed, Q4).
 
 ### County
-`id`, `name` (unique), `code`. Seeded with Kenya's counties. Exact list to be seeded from an authoritative source and checked at implementation.
+`id`, `name` (unique), `code` (unique integer). Seeded with the 47 counties from the First Schedule of the Constitution of Kenya (source linked in `apps/api/prisma/data/counties.ts`); `code` is the number in the Schedule. Names are as written there (for example `Nairobi City`, `Taita/Taveta`); storefront display names are to be confirmed.
 
 ### AgentCounty
 `agentId`, `countyId` (unique pair). Which counties an agent covers (Q4).
@@ -33,7 +33,7 @@ Observed in the sheet and to be confirmed (Q2): PROSTGUARD quantity 1 = 3,999; 2
 Rule for quantities without a defined price: **not allowed** until Q2 is answered.
 
 ### Order
-`id`, `orderNo` (unique, human readable; proposal `OADL-YYMMDD-####`), `idempotencyKey` (unique, nullable), `source` (`STOREFRONT` | `MANAGER_CREATED`), `customerName`, `customerPhone` (E.164), `countyId`, `town` (free text, required), `addressText` (free text, optional; Q26), `landingSlug` (nullable), `utmSource`, `utmMedium`, `utmCampaign`, `utmContent` (all nullable, from the ad link), `status`, `assignedAgentId` (nullable), `scheduledDate` (nullable date; meaning per Q1), `totalKes`, `attemptCount` (default 0), `notes`, `createdAt`, `updatedAt`, `deliveredAt`.
+`id`, `orderNo` (unique, human readable; proposal `OADL-YYMMDD-####`), `idempotencyKey` (unique, nullable), `source` (`STOREFRONT` | `MANAGER_CREATED`), `customerName`, `customerPhone` (E.164), `countyId`, `location` (free text, required; D20 replaced the earlier `town` + optional `addressText` split), `landingSlug` (nullable), `utmSource`, `utmMedium`, `utmCampaign`, `utmContent` (all nullable, from the ad link), `status`, `assignedAgentId` (nullable), `scheduledDate` (nullable date; meaning per Q1), `totalKes`, `attemptCount` (default 0), `notes`, `createdAt`, `updatedAt`, `deliveredAt`.
 
 ### OrderItem
 `id`, `orderId`, `productId`, `quantity`, `lineTotalKes`. Price is **copied at purchase time** from `ProductPrice`, so later price edits never change old orders.
@@ -86,4 +86,4 @@ Stock is deducted only when an order becomes `DELIVERED`.
 
 **Implemented so far:** `apps/api/prisma/seed.ts` seeds only PROSTGUARD and its three bundles (1, 2 and 3 units at 3,999, 5,500 and 7,000 KES). It uses `upsert` with an empty update, so re-running it never overwrites later edits. Description, image and compare-at price are left empty until the client approves them (Q14, Q25). The rest of this section is still planned.
 
-Counties, the products listed above with their observed bundle prices (flagged as unconfirmed), one manager user, and test agents with fake names and numbers. **Never seed real customer data.**
+Counties (implemented: all 47), the products listed above with their observed bundle prices (flagged as unconfirmed), one manager user, and test agents with fake names and numbers. **Never seed real customer data.**

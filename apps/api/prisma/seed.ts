@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '../src/generated/prisma/client.js';
+import { counties } from './data/counties.js';
 
 const connectionString = process.env['DATABASE_URL'];
 if (!connectionString) {
@@ -21,6 +22,14 @@ const bundles = [
 ];
 
 async function main(): Promise<void> {
+  for (const county of counties) {
+    await prisma.county.upsert({
+      where: { code: county.code },
+      update: {},
+      create: county,
+    });
+  }
+
   const product = await prisma.product.upsert({
     where: { slug: 'prostguard' },
     update: {},
