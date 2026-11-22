@@ -74,7 +74,7 @@ Worker polls pending outbox rows, calls the external service, marks done or incr
 
 ## 5. Cross-cutting concerns
 
-- **Auth**: phone number plus password for staff in Phase 1 (D24), email later; one manager (D23); login lifetime per D25, with the user's `active` flag checked in the database on every request. Token mechanism to be decided after reading the current Nest authentication docs. Customers do not log in.
+- **Auth**: phone number plus password for staff in Phase 1 (D24), email later; one manager (D23); login lifetime per D25, with the user's account status (`ACTIVE`) checked in the database on every request. Agents register themselves and wait for the manager's approval (D26). Agents never see other agents' data, and see a customer's details only for orders currently assigned to them (D27); the server enforces this in every query, not only in the app. Token mechanism to be decided after reading the current Nest authentication docs. Customers do not log in.
 - **Real-time**: Socket.IO or native WebSocket gateway in NestJS (pick one at implementation). Every pop-up is also a stored `Notification`, so reconnects and offline users lose nothing.
 - **Validation and errors**: DTO validation on all inputs; consistent error format; no stack traces to clients.
 - **Audit**: status history, stock movements and payments are append-only.
