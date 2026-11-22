@@ -12,6 +12,7 @@ Status: Draft v0.1, 2026-11-15. Platform details below are plans, not verified f
 
 ## Before go-live (blocking items)
 
+0a. **Manager account and sessions:** there is no default account. Create the one manager (D23) once per environment with `MANAGER_NAME`, `MANAGER_PHONE` and `MANAGER_PASSWORD` set for that command only, then `pnpm --filter api create-manager`; it refuses to run if a manager exists. Set `CORS_ORIGINS` to the portal origin(s). Sessions live in PostgreSQL (the package refuses in-memory sessions in production). The `__Host-sid` cookie needs HTTPS and the API and portal on the same parent domain (D30, Q31 open).
 0. **Public order endpoint protection:** `POST /orders` is rate limited (10 a minute per IP, 120 a minute for other routes, in memory, so correct for **one** API instance only) and verified with Cloudflare Turnstile. Before go-live: (a) **set `TRUST_PROXY` correctly.** Behind Render's proxy every visitor otherwise looks like the same IP and shares one limit, so real customers get blocked together. Read Render's current documentation and test with two phones; the right value is UNVERIFIED. (b) Create the Turnstile widget with the production hostnames and set `CAPTCHA_SECRET` and the site key. (c) Check Turnstile's current pricing and limits (UNVERIFIED). (d) Tune the limits with real ad traffic: many Kenyan mobile users can share one public IP. (e) If the API ever runs on more than one instance, move the rate-limit store out of memory.
 1. **Plan terms (Q7):** the API must run on a **paid, always-on Render instance** (free instances sleep after 15 minutes, which would break real-time pop-ups and the outbox worker), and the database must be a **paid Postgres** (Render's free Postgres expires after 30 days and has no backups). Read Vercel's Terms of Service fair-use section to confirm the plan used for the storefront and portal is allowed for a commercial site.
 2. **Backups:** confirm what backups the chosen database plan includes and test a restore.
@@ -44,6 +45,7 @@ Status: Draft v0.1, 2026-11-15. Platform details below are plans, not verified f
 | `NEXT_PUBLIC_CAPTCHA_SITE_KEY` | storefront | Public Turnstile site key |
 | `NEXT_PUBLIC_WHATSAPP_NUMBER` | storefront | Manager WhatsApp number (digits only) |
 | `VITE_API_URL` | portal | API base URL |
+| `CORS_ORIGINS` | api | Portal origins allowed to send the session cookie to the API, comma separated, no paths (D30). Empty means none. Also used as the CSRF trusted origins |
 | `TRUST_PROXY` | api | How many proxies, or which addresses, to trust for the client IP (Express `trust proxy`). **UNVERIFIED value for Render**; see go-live item 0 |
 | `NODE_ENV`, `PORT`, `TZ` | api | Runtime (`TZ` optional; the app stores UTC) |
 

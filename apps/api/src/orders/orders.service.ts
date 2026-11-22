@@ -1,5 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
+import { isUniqueViolation } from '../prisma/unique-violation.js';
 import type { CreateOrderInput } from './create-order.schema.js';
 
 export type NewOrder = Omit<CreateOrderInput, 'turnstileToken'>;
@@ -20,15 +21,6 @@ const publicOrderSelect = {
 } as const;
 
 const MAX_ORDER_NO_ATTEMPTS = 5;
-
-function isUniqueViolation(error: unknown): boolean {
-  return (
-    typeof error === 'object' &&
-    error !== null &&
-    'code' in error &&
-    error.code === 'P2002'
-  );
-}
 
 @Injectable()
 export class OrdersService {

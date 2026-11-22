@@ -133,3 +133,50 @@ model OrderStatusHistory {
   @@index([orderId, createdAt])
   @@map("order_status_history")
 }
+
+enum UserRole {
+  MANAGER
+  AGENT
+}
+
+// A self-registered agent starts PENDING until the manager approves (D26).
+// Only ACTIVE users can sign in.
+enum UserStatus {
+  PENDING
+  ACTIVE
+  DISABLED
+}
+
+// Staff accounts. Phase 1 signs in with the phone number (D24); email is
+// added later. Users are never deleted, they are DISABLED.
+model User {
+  id           String     @id @default(uuid())
+  name         String
+  phone        String     @unique
+  email        String?    @unique
+  passwordHash String
+  role         UserRole
+  status       UserStatus @default(PENDING)
+  createdAt    DateTime   @default(now())
+
+  @@map("users")
+}
+
+// Server-side sessions for @nestjs/authentication (D28). `id` is the SHA-256
+// of the cookie token; the token itself is never stored. userId has no
+// foreign key on purpose: the package's store contract tests save sessions
+// for ids that are not in `users`, and users are never hard-deleted.
+model Session {
+  id           String   @id
+  userId       String
+  createdAt    DateTime
+  expiresAt    DateTime
+  lastActiveAt DateTime
+  mfa          String?
+  metadata     Json?
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("sessions")
+}
+
