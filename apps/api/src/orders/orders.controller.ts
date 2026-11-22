@@ -1,4 +1,5 @@
 import { Body, Controller, Ip, Post } from '@nestjs/common';
+import { Public } from '@nestjs/authentication';
 import { Throttle } from '@nestjs/throttler';
 import { TurnstileService } from '../turnstile/turnstile.service.js';
 import {
@@ -12,6 +13,7 @@ import { OrdersService } from './orders.service.js';
 // TODO(confirm): the limit below is a starting point, not a client rule.
 // Many Kenyan mobile users can share one public IP, so tune it with real
 // traffic from the ads.
+@Public()
 @Controller('orders')
 export class OrdersController {
   constructor(

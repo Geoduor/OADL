@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import { AppModule } from './app.module.js';
+import { allowedOrigins } from './config/origins.js';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -17,6 +18,13 @@ async function bootstrap() {
       /^\d+$/.test(trustProxy) ? Number(trustProxy) : trustProxy,
     );
   }
+
+  // Portal and API share a parent domain (D30). Cookies need an explicit
+  // origin list; never use '*' with credentials.
+  const origins = allowedOrigins();
+  app.enableCors({ origin: origins, credentials: true });
+  app.enableCsrfProtection({ trustedOrigins: origins });
+  app.useSecurityHeaders();
 
   await app.listen(process.env.PORT ?? 3000);
 }

@@ -6,13 +6,13 @@ Conventions: money is integer KES; phones are E.164; timestamps are UTC; IDs are
 
 ## Implementation status
 
-Implemented in Prisma: `Product` and `ProductPrice` (migration `add_products`, 2026-11-17) and `County`, `Order`, `OrderItem` and `OrderStatusHistory` (migration `add_orders`, 2026-11-22). Every other entity is still design only; each is added with the feature that needs it. Deferred from the order tables until their models exist: `Order.assignedAgentId` (with `Agent`) and `OrderStatusHistory.changedByUserId` (with `User`). `OrderStatus` has the eight values in `ORDER_LIFECYCLE.md`, including the proposed `CONFIRMED`. IDs are UUID strings (`@default(uuid())`, stored as `TEXT`). Not yet decided: whether all tables get `createdAt` / `updatedAt` columns (Order, history and ledger tables already list their own timestamps).
+Implemented in Prisma: `Product` and `ProductPrice` (migration `add_products`, 2026-11-17) and `County`, `Order`, `OrderItem` and `OrderStatusHistory` (migration `add_orders`, 2026-11-22). `User` and `Session` (auth sessions, no foreign key to `users` so users are never hard-deleted with their sessions; migration `add_users_sessions`) are implemented as of Step 6a. Every other entity is still design only; each is added with the feature that needs it. Deferred from the order tables until their models exist: `Order.assignedAgentId` (with `Agent`) and `OrderStatusHistory.changedByUserId` (with `User`). `OrderStatus` has the eight values in `ORDER_LIFECYCLE.md`, including the proposed `CONFIRMED`. IDs are UUID strings (`@default(uuid())`, stored as `TEXT`). Not yet decided: whether all tables get `createdAt` / `updatedAt` columns (Order, history and ledger tables already list their own timestamps).
 
 ## Entities
 
 ### User
-`id`, `name`, `email` (nullable), `phone` (nullable, E.164), `passwordHash`, `role` (`MANAGER` | `AGENT`), `status` (`PENDING` | `ACTIVE` | `DISABLED`; a self-registered agent starts `PENDING` until the manager approves, D26; only `ACTIVE` users can sign in), `createdAt`.
-At least one of email or phone is required and unique. In Phase 1 staff sign in with the phone number (D24).
+`id`, `name`, `email` (nullable), `phone` (required and unique in Phase 1, E.164), `passwordHash`, `role` (`MANAGER` | `AGENT`), `status` (`PENDING` | `ACTIVE` | `DISABLED`; a self-registered agent starts `PENDING` until the manager approves, D26; only `ACTIVE` users can sign in), `createdAt`.
+`email` is nullable and unique when present; it is not used to sign in yet. In Phase 1 staff sign in with the phone number (D24).
 
 ### Agent
 `id`, `userId` (1:1 with a User of role AGENT), `displayName`, `active` (whether the agent receives assignments; separate from the account `status`), `sheetTabId` (the numeric Google `sheetId` of the agent's tab, **not** the tab title, because titles contain irregular text such as `JEOFREY -NAIROBI`).
