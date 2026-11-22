@@ -12,6 +12,7 @@ Status: Draft v0.1, 2026-11-15. Platform details below are plans, not verified f
 
 ## Before go-live (blocking items)
 
+0. **Public order endpoint protection:** `POST /orders` exists but has **no rate limiting or bot protection yet**. Do not expose the API publicly until both are in place (AGENTS.md section 6).
 1. **Plan terms (Q7):** the API must run on a **paid, always-on Render instance** (free instances sleep after 15 minutes, which would break real-time pop-ups and the outbox worker), and the database must be a **paid Postgres** (Render's free Postgres expires after 30 days and has no backups). Read Vercel's Terms of Service fair-use section to confirm the plan used for the storefront and portal is allowed for a commercial site.
 2. **Backups:** confirm what backups the chosen database plan includes and test a restore.
 3. **Prisma and Render Postgres:** read current documentation on connection strings (internal vs external URL), connection limits and migrations on Render before configuring `DATABASE_URL`. Region choice (closest to Kenya that Render offers) is to be checked (Q28). Production applies migrations with `prisma migrate deploy`, never `migrate dev` (this is Prisma's usual production command; confirm it in the current docs and decide where it runs on Render, for example a pre-deploy step).

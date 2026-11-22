@@ -6,7 +6,7 @@ Status: Draft v0.1, 2026-11-15. Phases follow what the developer confirmed. Date
 
 **Progress (2026-11-18):** repository, pnpm workspace, NestJS API scaffold, Prisma with PostgreSQL, first migration (products) and a database smoke test are done. Blocking questions Q1 to Q5 and Q7 are still open.
 
-**Phase 1 progress (2026-11-19):** public catalogue endpoints (`GET /products`, `GET /products/:slug`) built and covered by e2e tests. The order tables (County, Order, OrderItem, OrderStatusHistory) and the 47 counties are in the schema. A seed script (`apps/api/prisma/seed.ts`) loads PROSTGUARD only (bundles 1/2/3 at 3,999 / 5,500 / 7,000 KES, from the client's sheet). Other products wait for Q2 and Q24; order creation is next.
+**Phase 1 progress (2026-11-19):** public catalogue endpoints (`GET /products`, `GET /products/:slug`) built and covered by e2e tests. The order tables (County, Order, OrderItem, OrderStatusHistory) and the 47 counties are in the schema. A seed script (`apps/api/prisma/seed.ts`) loads PROSTGUARD only (bundles 1/2/3 at 3,999 / 5,500 / 7,000 KES, from the client's sheet). Other products wait for Q2 and Q24. **2026-11-22:** `GET /counties` and `POST /orders` (Zod validation, prices from the database, idempotency key, status `PLACED`) are built. Still missing before the order endpoint may be public: rate limiting and bot protection (next PR, bot-protection provider not chosen). Manager notification, sheet sync and the state machine come later.
 
 - Create the `OADL` GitHub repository, commit these docs.
 - Scaffold the monorepo, CI, linting, `.env.example`.
