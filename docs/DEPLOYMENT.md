@@ -39,9 +39,9 @@ Status: Draft v0.1, 2026-11-15. Platform details below are plans, not verified f
 | `GOOGLE_SHEET_ID` | api | Target spreadsheet |
 | `SMS_PROVIDER` | api | Provider selector |
 | `SMS_API_KEY`, `SMS_USERNAME`, `SMS_SENDER_ID` | api | Provider credentials (names depend on provider) |
-| `CAPTCHA_SECRET` | api | Bot-protection verification |
+| `CAPTCHA_SECRET` | api | Bot-protection verification (Cloudflare Turnstile secret key, D22) |
 | `NEXT_PUBLIC_API_URL` | storefront | API base URL |
-| `NEXT_PUBLIC_CAPTCHA_SITE_KEY` | storefront | Public CAPTCHA key |
+| `NEXT_PUBLIC_CAPTCHA_SITE_KEY` | storefront | Public Turnstile site key |
 | `NEXT_PUBLIC_WHATSAPP_NUMBER` | storefront | Manager WhatsApp number (digits only) |
 | `VITE_API_URL` | portal | API base URL |
 | `NODE_ENV`, `PORT`, `TZ` | api | Runtime (`TZ` optional; the app stores UTC) |

@@ -26,6 +26,7 @@ Last updated: 2026-11-19. This file is the register of what is confirmed and wha
 | D19 | API request validation uses **Zod** (a Standard Schema library) through Nest's `StandardSchemaValidationPipe`. Adds `zod` as a dependency (pin the exact version) | Developer, 2026-11-19 (answers Q21) |
 | D20 | Customer order form fields: full name, phone, county (dropdown) and location (free text), plus product and bundle. `DATA_MODEL.md` and the `Order` model use a single required free-text `location` field (reconciled 2026-11-22) | Developer, 2026-11-19 (answers Q26) |
 | D21 | The manager **phone-confirms each order before assigning it**: a new status sits between `PLACED` and `ASSIGNED`. The name `CONFIRMED` is a **proposal** pending the developer's OK. Not yet confirmed with the client; a customer who cannot be reached at confirmation makes the order `UNRESPONSIVE` (developer, 2026-11-19); how such an order is retried is open (see Q15) | Developer, 2026-11-19 (answers Q16) |
+| D22 | Bot protection on the public order endpoint uses **Cloudflare Turnstile** (a new third-party service, approved by the developer 2026-11-22). Read Cloudflare's current Turnstile docs before implementing; check its pricing and limits (UNVERIFIED) | Developer, 2026-11-22 |
 | D15 | Sheet "OADL-AGENTS SHEET ORDERS" has 3 tabs: `JEOFREY -NAIROBI`, `ANDY COLE-COAST`, `BRAMUEL -KSM & OTHERS` (verified via the Sheets connector) | Verified 2026-11-15 |
 
 ## Open questions
