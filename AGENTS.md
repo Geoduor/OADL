@@ -53,7 +53,7 @@ Database layer (D17): **Prisma 7.10.1, pinned**. Never install `prisma@latest` (
 - Never commit secrets. Use environment variables (`docs/DEPLOYMENT.md`) and keep an up-to-date `.env.example` with **names only**.
 - Customer names, phones and addresses are personal data. Do not log them in plain text, put them in error messages, or use real data in tests, fixtures or screenshots.
 - The public order endpoint must have rate limiting, bot protection and an idempotency key.
-- Passwords are hashed with a modern algorithm (argon2 or bcrypt). No default or shared accounts in production.
+- Passwords are hashed with **scrypt** through `@nestjs/authentication`'s `PasswordHasher` (D29; OWASP's fallback to Argon2id). Never store or log a plain password. No default or shared accounts in production.
 
 ## 7. Commands
 
