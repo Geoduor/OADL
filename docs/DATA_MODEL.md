@@ -11,11 +11,11 @@ Implemented in Prisma: `Product` and `ProductPrice` (migration `add_products`, 2
 ## Entities
 
 ### User
-`id`, `name`, `email` (nullable), `phone` (nullable, E.164), `passwordHash`, `role` (`MANAGER` | `AGENT`), `active`, `createdAt`.
-At least one of email or phone is required and unique.
+`id`, `name`, `email` (nullable), `phone` (nullable, E.164), `passwordHash`, `role` (`MANAGER` | `AGENT`), `status` (`PENDING` | `ACTIVE` | `DISABLED`; a self-registered agent starts `PENDING` until the manager approves, D26; only `ACTIVE` users can sign in), `createdAt`.
+At least one of email or phone is required and unique. In Phase 1 staff sign in with the phone number (D24).
 
 ### Agent
-`id`, `userId` (1:1 with a User of role AGENT), `displayName`, `active`, `sheetTabId` (the numeric Google `sheetId` of the agent's tab, **not** the tab title, because titles contain irregular text such as `JEOFREY -NAIROBI`).
+`id`, `userId` (1:1 with a User of role AGENT), `displayName`, `active` (whether the agent receives assignments; separate from the account `status`), `sheetTabId` (the numeric Google `sheetId` of the agent's tab, **not** the tab title, because titles contain irregular text such as `JEOFREY -NAIROBI`).
 Verified sheet tab IDs on 2026-11-15: `0`, `237653016`, `1797378097` (assignment to agents to be confirmed, Q4).
 
 ### County
