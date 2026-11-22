@@ -58,7 +58,7 @@ describe('Authentication (e2e)', () => {
     });
   }
 
-  async function login(phone: string, password = PASSWORD) {
+  function login(phone: string, password = PASSWORD) {
     return request(app.getHttpServer())
       .post('/auth/login')
       .send({ phone, password });
