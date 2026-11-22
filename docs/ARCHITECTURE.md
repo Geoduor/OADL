@@ -74,7 +74,7 @@ Worker polls pending outbox rows, calls the external service, marks done or incr
 
 ## 5. Cross-cutting concerns
 
-- **Auth**: email or phone plus password for staff; JWT (short-lived access token, refresh strategy to be decided at implementation). Customers do not log in.
+- **Auth**: phone number plus password for staff in Phase 1 (D24), email later; one manager (D23); login lifetime per D25, with the user's `active` flag checked in the database on every request. Token mechanism to be decided after reading the current Nest authentication docs. Customers do not log in.
 - **Real-time**: Socket.IO or native WebSocket gateway in NestJS (pick one at implementation). Every pop-up is also a stored `Notification`, so reconnects and offline users lose nothing.
 - **Validation and errors**: DTO validation on all inputs; consistent error format; no stack traces to clients.
 - **Audit**: status history, stock movements and payments are append-only.

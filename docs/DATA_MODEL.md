@@ -12,7 +12,7 @@ Implemented in Prisma: `Product` and `ProductPrice` (migration `add_products`, 2
 
 ### User
 `id`, `name`, `email` (nullable), `phone` (nullable, E.164), `passwordHash`, `role` (`MANAGER` | `AGENT`), `active`, `createdAt`.
-At least one of email or phone is required and unique.
+At least one of email or phone is required and unique. In Phase 1 staff sign in with the phone number (D24).
 
 ### Agent
 `id`, `userId` (1:1 with a User of role AGENT), `displayName`, `active`, `sheetTabId` (the numeric Google `sheetId` of the agent's tab, **not** the tab title, because titles contain irregular text such as `JEOFREY -NAIROBI`).

@@ -27,6 +27,9 @@ Last updated: 2026-11-19. This file is the register of what is confirmed and wha
 | D20 | Customer order form fields: full name, phone, county (dropdown) and location (free text), plus product and bundle. `DATA_MODEL.md` and the `Order` model use a single required free-text `location` field (reconciled 2026-11-22) | Developer, 2026-11-19 (answers Q26) |
 | D21 | The manager **phone-confirms each order before assigning it**: a new status sits between `PLACED` and `ASSIGNED`. The name `CONFIRMED` is a **proposal** pending the developer's OK. Not yet confirmed with the client; a customer who cannot be reached at confirmation makes the order `UNRESPONSIVE` (developer, 2026-11-19); how such an order is retried is open (see Q15) | Developer, 2026-11-19 (answers Q16) |
 | D22 | Bot protection on the public order endpoint uses **Cloudflare Turnstile** (a new third-party service, approved by the developer 2026-11-22). Read Cloudflare's current Turnstile docs before implementing; check its pricing and limits (UNVERIFIED) | Developer, 2026-11-22 |
+| D23 | Phase 1 has **one manager account**. Several managers or separate permission levels come later (answers Q10 for now) | Developer, 2026-11-22 |
+| D24 | Staff sign in with **phone number and password** (manager and agents). Email and password can be added later. No SMS or email verification in Phase 1, so a forgotten password is reset by the manager | Developer, 2026-11-22; manual reset is a proposal |
+| D25 | **Login lifetime (chosen by the assistant on the developer's request, a proposal to revisit):** an agent stays signed in for 30 days (phone PWA, avoids constant sign-ins), the manager for 7 days. The user's `active` flag is checked in the database on **every request**, so deactivating an account takes effect at once, and a password change makes older logins stop working. Exact token mechanism to be chosen after reading the current Nest authentication docs | Proposal, 2026-11-22 |
 | D15 | Sheet "OADL-AGENTS SHEET ORDERS" has 3 tabs: `JEOFREY -NAIROBI`, `ANDY COLE-COAST`, `BRAMUEL -KSM & OTHERS` (verified via the Sheets connector) | Verified 2026-11-15 |
 
 ## Open questions
@@ -44,7 +47,7 @@ Mark each as answered with a date when resolved.
 | Q7 | Hosting plan decision. **Verified 2026-11-15 from Render's docs:** free web services sleep after 15 minutes idle; free Postgres expires after 30 days (14-day grace, then deleted), is capped at 1 GB, has no backups, and Render says free instances are not for production. **Not verified:** whether Vercel's Hobby plan permits a commercial site (the fair-use page points to the Terms of Service; read it), Supabase free-plan terms, and paid Render prices. Decision D3 adopts Render paid web service + Render paid Postgres, Vercel for the front ends, no Supabase. Still open: paid Render prices and the Vercel plan question | Deployment |
 | Q8 | Delivery fee: does the sheet amount ever include a delivery fee? None seen | Pricing |
 | Q9 | Manager WhatsApp number and hours for the "Talk to us" button | Storefront |
-| Q10 | How many manager or admin users, and do they need different permissions? | Auth |
+| Q10 | How many manager or admin users, and do they need different permissions? **Answered for Phase 1 on 2026-11-22, see D23.** | Auth |
 | Q11 | What phones do agents use (Android or iPhone)? Affects background push in Phase 2 (unverified) | Phase 2 |
 | Q12 | Stock workflow: who issues stock to agents, how are returns, damages and stock counts recorded? | Stock module |
 | Q13 | Does the storefront block or warn when the covering agent is out of stock? | Storefront |
@@ -63,3 +66,4 @@ Mark each as answered with a date when resolved.
 | Q26 | Minimum order form fields. The examples require name, town and phone, with address optional. We also propose a county dropdown (one tap) so auto-assignment works. Is that acceptable, or must the form be shorter? **Answered 2026-11-19, see D20.** | Storefront, assignment |
 | Q27 | Who runs the Facebook ads, and what tracking is wanted (Meta Pixel, Conversions API)? Meta's ad rules for health products are not verified here. Tracking needs a privacy review (Q19) and is outside Phase 1 | Marketing, Phase 2 |
 | Q28 | Which Render region for the API and database (closest to Kenyan users)? Available regions and latency were not checked | Deployment |
+| Q29 | Are agent accounts **created by the manager** (proposed: nobody can sign up on their own, because a public sign-up would let anyone become an agent and see orders), or do agents register themselves and wait for the manager's approval? The developer wrote that agents "register using phone numbers and password"; which of the two is meant is UNCONFIRMED | Auth, agents |
