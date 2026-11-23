@@ -2,6 +2,7 @@ import { Module, StandardSchemaValidationPipe } from '@nestjs/common';
 import { APP_GUARD, APP_PIPE } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { AuthenticationModule } from '@nestjs/authentication';
+import { AgentsModule } from './agents/agents.module.js';
 import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
 import { AuthModule } from './auth/auth.module.js';
@@ -29,6 +30,7 @@ import { ProductsModule } from './products/products.module.js';
       },
     }),
     AuthModule,
+    AgentsModule,
     ProductsModule,
     CountiesModule,
     OrdersModule,

@@ -35,6 +35,7 @@ Last updated: 2026-11-19. This file is the register of what is confirmed and wha
 | D28 | Sign-in, sessions and refresh use Nest's first-party **`@nestjs/authentication`** (documented in Nest 12's authentication chapter; version 0.1.x at the time of choosing, so pin the exact version and re-read its docs on every upgrade). Sessions are stored in PostgreSQL, because the package refuses in-memory sessions when `NODE_ENV=production` | Developer, 2026-11-22 |
 | D29 | Passwords are hashed with **scrypt** through the package's `PasswordHasher` (Node's `node:crypto`, OWASP parameters). OWASP lists Argon2id first and scrypt as the fallback; scrypt was chosen to avoid a native build on Windows and Render. The `AGENTS.md` rule "argon2 or bcrypt" was changed to match | Developer, 2026-11-22 |
 | D30 | The portal and the API are planned to share one parent domain, so sign-in uses **HttpOnly session cookies**, not tokens kept in the browser. The real domain is not chosen yet (Q31) | Developer, 2026-11-22 |
+| D31 | **The manager assigns the agent's counties when approving the registration** (at least one county). Counties can be changed later. Several agents may cover the same county. Which counties each agent really covers is still open (Q4); the manager enters them. Rejecting a registration disables the account (rows are never deleted) | Developer, 2026-11-22 |
 | D15 | Sheet "OADL-AGENTS SHEET ORDERS" has 3 tabs: `JEOFREY -NAIROBI`, `ANDY COLE-COAST`, `BRAMUEL -KSM & OTHERS` (verified via the Sheets connector) | Verified 2026-11-15 |
 
 ## Open questions

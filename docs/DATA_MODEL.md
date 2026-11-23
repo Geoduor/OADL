@@ -15,14 +15,14 @@ Implemented in Prisma: `Product` and `ProductPrice` (migration `add_products`, 2
 `email` is nullable and unique when present; it is not used to sign in yet. In Phase 1 staff sign in with the phone number (D24).
 
 ### Agent
-`id`, `userId` (1:1 with a User of role AGENT), `displayName`, `active` (whether the agent receives assignments; separate from the account `status`), `sheetTabId` (the numeric Google `sheetId` of the agent's tab, **not** the tab title, because titles contain irregular text such as `JEOFREY -NAIROBI`).
+Implemented (migration `add_agents`) except `sheetTabId`, which comes with the Sheets sync. `id`, `userId` (1:1 with a User of role AGENT), `displayName`, `active` (whether the agent receives assignments; separate from the account `status`), `sheetTabId` (the numeric Google `sheetId` of the agent's tab, **not** the tab title, because titles contain irregular text such as `JEOFREY -NAIROBI`).
 Verified sheet tab IDs on 2026-11-15: `0`, `237653016`, `1797378097` (assignment to agents to be confirmed, Q4).
 
 ### County
 `id`, `name` (unique), `code` (unique integer). Seeded with the 47 counties from the First Schedule of the Constitution of Kenya (source linked in `apps/api/prisma/data/counties.ts`); `code` is the number in the Schedule. Names are as written there (for example `Nairobi City`, `Taita/Taveta`); storefront display names are to be confirmed.
 
 ### AgentCounty
-`agentId`, `countyId` (unique pair). Which counties an agent covers (Q4).
+Implemented. `agentId`, `countyId` (composite key). Which counties an agent covers (Q4). The manager sets them when approving the agent (D31); several agents may cover one county.
 
 ### Product
 `id`, `name` (for example PROSTGUARD), `slug` (unique), `description`, `imageUrl`, `active`, `sortOrder`.
