@@ -61,7 +61,7 @@ stateDiagram-v2
 | UNRESPONSIVE | DISPATCHED | Assigned agent | Retry |
 | UNRESPONSIVE | PLACED, CONFIRMED | Manager | Retry (D32). Releases the assigned agent, if any (the assistant's reading of D32, to confirm) |
 | RESCHEDULED | DISPATCHED | Assigned agent | On or after the new date (not enforced strictly) |
-| ASSIGNED, RESCHEDULED | ASSIGNED (different agent) | Manager | Only before dispatch (D33). Releases the old agent's reservation, notifies both agents |
+| ASSIGNED, RESCHEDULED | ASSIGNED | Manager | Only before dispatch (D33). From ASSIGNED the agent must be a different one; from RESCHEDULED it may be the same agent. Releases the old agent's reservation, notifies both agents |
 | Any non-final | CANCELLED | Manager | Reason required |
 
 Anything not listed is rejected. `DELIVERED` and `CANCELLED` are final; corrections are made by the manager through an audited adjustment (design to be agreed, Q15).

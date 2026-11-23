@@ -274,6 +274,14 @@ describe('Manager orders and status changes (e2e)', () => {
       to: 'ASSIGNED',
       agentUserId: agentB.userId,
     }).expect(200);
+
+    // The previous agent may get the order back after a reschedule (D33).
+    const again = await makeOrder('RESCHEDULED', agentA.agentId);
+    const back = await move(again, {
+      to: 'ASSIGNED',
+      agentUserId: agentA.userId,
+    }).expect(200);
+    expect((back.body as OrderBody).assignedAgent?.userId).toBe(agentA.userId);
   });
 
   it('needs a reason to cancel and a future date to reschedule', async () => {
