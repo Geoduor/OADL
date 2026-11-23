@@ -37,6 +37,8 @@ stateDiagram-v2
     UNRESPONSIVE --> RESCHEDULED: agent or manager
     UNRESPONSIVE --> DISPATCHED: agent retries
     UNRESPONSIVE --> CANCELLED: manager
+    UNRESPONSIVE --> PLACED: manager retries (D32)
+    UNRESPONSIVE --> CONFIRMED: manager retries (D32)
     RESCHEDULED --> DISPATCHED: agent
     RESCHEDULED --> ASSIGNED: manager reassigns
     RESCHEDULED --> CANCELLED: manager
@@ -57,8 +59,9 @@ stateDiagram-v2
 | DISPATCHED | DELIVERED | Assigned agent | Payment method and amount required; stock deducted |
 | ASSIGNED, DISPATCHED | UNRESPONSIVE | Assigned agent | Increments `attemptCount` |
 | UNRESPONSIVE | DISPATCHED | Assigned agent | Retry |
+| UNRESPONSIVE | PLACED, CONFIRMED | Manager | Retry (D32). Releases the assigned agent, if any (the assistant's reading of D32, to confirm) |
 | RESCHEDULED | DISPATCHED | Assigned agent | On or after the new date (not enforced strictly) |
-| ASSIGNED, RESCHEDULED | ASSIGNED (different agent) | Manager | Releases the old agent's reservation, notifies both agents |
+| ASSIGNED, RESCHEDULED | ASSIGNED | Manager | Only before dispatch (D33). From ASSIGNED the agent must be a different one; from RESCHEDULED it may be the same agent. Releases the old agent's reservation, notifies both agents |
 | Any non-final | CANCELLED | Manager | Reason required |
 
 Anything not listed is rejected. `DELIVERED` and `CANCELLED` are final; corrections are made by the manager through an audited adjustment (design to be agreed, Q15).
@@ -79,6 +82,7 @@ All of these run inside one service method; external effects are queued in the o
 
 ## Open points
 
-- Q16 is answered (D21): confirmation is required. Unreachable at confirmation ends in `UNRESPONSIVE` (developer, 2026-11-19). Still open: how an order leaves `UNRESPONSIVE` when it never had an agent (a retry back to `PLACED` is UNCONFIRMED; the diagram's `UNRESPONSIVE --> DISPATCHED` assumes an agent), whether the client agrees, and the final status name.
+- Q16 is answered (D21): confirmation is required. Unreachable at confirmation ends in `UNRESPONSIVE` (developer, 2026-11-19). Retry from `UNRESPONSIVE` is answered by D32 and reassignment by D33 (developer, 2026-11-23). Still open: whether the client agrees, and the final status name of `CONFIRMED`.
+- **Implemented (2026-11-23) in `apps/api/src/orders/order-transitions.ts`:** every transition above except `DELIVERED`, which waits for payments and stock. Side effects (notifications, SMS, sheet, stock) are not built; the single service method `OrderStatusService.change` is where they will be queued. Manager assignment does not yet check county coverage or stock (D8, ROADMAP steps 5 and 7).
 - Cancellation, refusal and return policy (Q15).
 - Sheet text for `ASSIGNED` and `DISPATCHED` (Q17).

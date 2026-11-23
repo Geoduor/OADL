@@ -70,7 +70,7 @@ model County {
   @@map("counties")
 }
 
-// Agent assignment and agent-related fields come with the User and Agent models.
+// Order.status is written only by OrderStatusService (docs/ORDER_LIFECYCLE.md).
 model Order {
   id             String      @id @default(uuid())
   orderNo        String      @unique
@@ -93,14 +93,17 @@ model Order {
   createdAt      DateTime    @default(now())
   updatedAt      DateTime    @updatedAt
   deliveredAt    DateTime?
+  assignedAgentId String?
 
-  county  County               @relation(fields: [countyId], references: [id])
-  items   OrderItem[]
-  history OrderStatusHistory[]
+  county        County               @relation(fields: [countyId], references: [id])
+  assignedAgent Agent?               @relation(fields: [assignedAgentId], references: [id])
+  items         OrderItem[]
+  history       OrderStatusHistory[]
 
   @@index([status])
   @@index([countyId])
   @@index([createdAt])
+  @@index([assignedAgentId])
   @@map("orders")
 }
 
@@ -120,16 +123,21 @@ model OrderItem {
   @@map("order_items")
 }
 
-// Append-only. changedByUserId is added with the User model.
+// Append-only. agentId is the agent assigned after the change (null when none).
+// changedByUserId is null for the customer's own order placement.
 model OrderStatusHistory {
-  id         String       @id @default(uuid())
-  orderId    String
-  fromStatus OrderStatus?
-  toStatus   OrderStatus
-  reason     String?
-  createdAt  DateTime     @default(now())
+  id              String       @id @default(uuid())
+  orderId         String
+  fromStatus      OrderStatus?
+  toStatus        OrderStatus
+  reason          String?
+  agentId         String?
+  changedByUserId String?
+  createdAt       DateTime     @default(now())
 
-  order Order @relation(fields: [orderId], references: [id])
+  order     Order  @relation(fields: [orderId], references: [id])
+  agent     Agent? @relation(fields: [agentId], references: [id])
+  changedBy User?  @relation(fields: [changedByUserId], references: [id])
 
   @@index([orderId, createdAt])
   @@map("order_status_history")
@@ -160,6 +168,7 @@ model User {
   status       UserStatus @default(PENDING)
   createdAt    DateTime   @default(now())
   agent        Agent?
+  statusChanges OrderStatusHistory[]
 
   @@map("users")
 }
@@ -193,6 +202,8 @@ model Agent {
   displayName String
   active      Boolean       @default(true)
   counties    AgentCounty[]
+  orders      Order[]
+  history     OrderStatusHistory[]
   createdAt   DateTime      @default(now())
 
   @@map("agents")
