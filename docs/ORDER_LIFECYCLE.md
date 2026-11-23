@@ -83,6 +83,7 @@ All of these run inside one service method; external effects are queued in the o
 ## Open points
 
 - Q16 is answered (D21): confirmation is required. Unreachable at confirmation ends in `UNRESPONSIVE` (developer, 2026-11-19). Retry from `UNRESPONSIVE` is answered by D32 and reassignment by D33 (developer, 2026-11-23). Still open: whether the client agrees, and the final status name of `CONFIRMED`.
+- **Agent endpoints (2026-11-23):** an agent can send only `DISPATCHED`, `UNRESPONSIVE` or `RESCHEDULED`, only for orders currently assigned to them; any other order looks like a missing one (404). Delivery with payment is not built yet.
 - **Implemented (2026-11-23) in `apps/api/src/orders/order-transitions.ts`:** every transition above except `DELIVERED`, which waits for payments and stock. Side effects (notifications, SMS, sheet, stock) are not built; the single service method `OrderStatusService.change` is where they will be queued. Manager assignment does not yet check county coverage or stock (D8, ROADMAP steps 5 and 7).
 - Cancellation, refusal and return policy (Q15).
 - Sheet text for `ASSIGNED` and `DISPATCHED` (Q17).
