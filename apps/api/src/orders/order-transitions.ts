@@ -2,8 +2,8 @@
 // rules"). Pure: no database, so it is easy to test. Anything not listed
 // here is rejected.
 //
-// Not in the table yet, on purpose: DELIVERED. It needs a payment record and
-// a stock deduction, and neither exists yet (ROADMAP steps 6 and 7).
+// DELIVERED records the payment in the same transaction (D34). The stock
+// deduction it also requires is not built yet (ROADMAP step 7).
 
 export type OrderStatusName =
   | 'PLACED'
@@ -22,7 +22,7 @@ export interface TransitionRule {
   to: OrderStatusName;
   actors: readonly Actor[];
   // What the request must carry besides the target status.
-  needs?: 'reason' | 'agent' | 'date';
+  needs?: 'reason' | 'agent' | 'date' | 'payment';
   // The order must move to a different agent than the current one.
   differentAgent?: boolean;
   // Bumps Order.attemptCount.
@@ -57,6 +57,7 @@ export const TRANSITIONS: readonly TransitionRule[] = [
   },
   { from: 'ASSIGNED', to: 'CANCELLED', actors: M, needs: 'reason' },
 
+  { from: 'DISPATCHED', to: 'DELIVERED', actors: A, needs: 'payment' },
   { from: 'DISPATCHED', to: 'UNRESPONSIVE', actors: A, countsAttempt: true },
   { from: 'DISPATCHED', to: 'RESCHEDULED', actors: AM, needs: 'date' },
   { from: 'DISPATCHED', to: 'CANCELLED', actors: M, needs: 'reason' },

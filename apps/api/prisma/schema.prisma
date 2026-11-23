@@ -99,6 +99,7 @@ model Order {
   assignedAgent Agent?               @relation(fields: [assignedAgentId], references: [id])
   items         OrderItem[]
   history       OrderStatusHistory[]
+  payments      Payment[]
 
   @@index([status])
   @@index([countyId])
@@ -169,6 +170,7 @@ model User {
   createdAt    DateTime   @default(now())
   agent        Agent?
   statusChanges OrderStatusHistory[]
+  paymentsRecorded Payment[]
 
   @@map("users")
 }
@@ -204,6 +206,7 @@ model Agent {
   counties    AgentCounty[]
   orders      Order[]
   history     OrderStatusHistory[]
+  payments    Payment[]
   createdAt   DateTime      @default(now())
 
   @@map("agents")
@@ -219,4 +222,32 @@ model AgentCounty {
 
   @@id([agentId, countyId])
   @@map("agent_counties")
+}
+
+// How the customer paid the agent on delivery (D34). The customer pays the
+// agent in cash or M-Pesa; what the agent later sends to the manager is a
+// separate settlement step that is not built yet.
+enum PaymentMethod {
+  CASH
+  MPESA
+}
+
+// Append-only: no update or delete. One row is written when the agent marks
+// the order Delivered, in the same transaction as the status change.
+model Payment {
+  id               String        @id @default(uuid())
+  orderId          String
+  agentId          String
+  method           PaymentMethod
+  amountKes        Int
+  recordedByUserId String
+  createdAt        DateTime      @default(now())
+
+  order      Order @relation(fields: [orderId], references: [id])
+  agent      Agent @relation(fields: [agentId], references: [id])
+  recordedBy User  @relation(fields: [recordedByUserId], references: [id])
+
+  @@index([orderId])
+  @@index([agentId, method])
+  @@map("payments")
 }

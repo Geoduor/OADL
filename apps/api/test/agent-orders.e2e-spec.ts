@@ -230,7 +230,7 @@ describe('Agent orders (e2e)', () => {
   it('refuses moves that belong to the manager or are not built', async () => {
     const id = await makeOrder('ASSIGNED', a.agentId);
     const http = app.getHttpServer();
-    for (const to of ['CANCELLED', 'CONFIRMED', 'ASSIGNED', 'DELIVERED']) {
+    for (const to of ['CANCELLED', 'CONFIRMED', 'ASSIGNED']) {
       await request(http)
         .post(`/agent/orders/${id}/status`)
         .set('Cookie', a.cookie)
@@ -285,5 +285,124 @@ describe('Agent orders (e2e)', () => {
       .get(`/agent/orders/${id}`)
       .set('Cookie', b.cookie)
       .expect(200);
+  });
+
+  describe('Delivered with payment (D34)', () => {
+    const deliver = (id: string, body: object, cookie = a.cookie) =>
+      agentMove(id, { to: 'DELIVERED', ...body }, cookie);
+
+    it('records cash, sets deliveredAt, and hides the order from the agent', async () => {
+      const id = await makeOrder('DISPATCHED', a.agentId);
+      const res = await deliver(id, {
+        paymentMethod: 'CASH',
+        amountKes: 3999,
+      }).expect(200);
+      expect(res.body).toEqual({ id, status: 'DELIVERED' });
+
+      const order = await prisma.order.findUniqueOrThrow({
+        where: { id },
+        include: { payments: true },
+      });
+      expect(order.status).toBe('DELIVERED');
+      expect(order.deliveredAt).not.toBeNull();
+      expect(order.payments).toHaveLength(1);
+      expect(order.payments[0]).toMatchObject({
+        method: 'CASH',
+        amountKes: 3999,
+        agentId: a.agentId,
+        recordedByUserId: a.userId,
+      });
+      await request(app.getHttpServer())
+        .get(`/agent/orders/${id}`)
+        .set('Cookie', a.cookie)
+        .expect(404);
+    });
+
+    it('needs both a method and an amount, and nothing changes without them', async () => {
+      const id = await makeOrder('DISPATCHED', a.agentId);
+      await deliver(id, {}).expect(400);
+      await deliver(id, { paymentMethod: 'CASH' }).expect(400);
+      await deliver(id, { amountKes: 3999 }).expect(400);
+      await deliver(id, { paymentMethod: 'PAYBILL', amountKes: 3999 }).expect(
+        400,
+      );
+      await deliver(id, { paymentMethod: 'CASH', amountKes: 0 }).expect(400);
+      await deliver(id, { paymentMethod: 'CASH', amountKes: 39.5 }).expect(400);
+      await deliver(id, { paymentMethod: 'CASH', amountKes: -5 }).expect(400);
+      const order = await prisma.order.findUniqueOrThrow({
+        where: { id },
+        include: { payments: true },
+      });
+      expect(order.status).toBe('DISPATCHED');
+      expect(order.payments).toHaveLength(0);
+    });
+
+    it('can only deliver a dispatched order, and only once', async () => {
+      const assigned = await makeOrder('ASSIGNED', a.agentId);
+      await deliver(assigned, {
+        paymentMethod: 'CASH',
+        amountKes: 3999,
+      }).expect(409);
+
+      const id = await makeOrder('DISPATCHED', a.agentId);
+      const body = { paymentMethod: 'MPESA', amountKes: 3999 };
+      const results = await Promise.all([deliver(id, body), deliver(id, body)]);
+      expect(results.map((r) => r.status).sort((x, y) => x - y)).toEqual([
+        200, 409,
+      ]);
+      expect(await prisma.payment.count({ where: { orderId: id } })).toBe(1);
+    });
+
+    it('does not let another agent, or the manager, deliver the order', async () => {
+      const id = await makeOrder('DISPATCHED', a.agentId);
+      const body = { paymentMethod: 'CASH', amountKes: 3999 };
+      await deliver(id, body, b.cookie).expect(404);
+      await request(app.getHttpServer())
+        .post(`/manager/orders/${id}/status`)
+        .set('Cookie', managerCookie)
+        .send({ to: 'DELIVERED', ...body })
+        .expect(403);
+      expect(await prisma.payment.count({ where: { orderId: id } })).toBe(0);
+    });
+
+    it('shows the manager who collected what, and flags a different amount', async () => {
+      const exact = await makeOrder('DISPATCHED', a.agentId);
+      const short = await makeOrder('DISPATCHED', a.agentId);
+      await deliver(exact, { paymentMethod: 'MPESA', amountKes: 3999 }).expect(
+        200,
+      );
+      await deliver(short, { paymentMethod: 'CASH', amountKes: 3500 }).expect(
+        200,
+      );
+
+      const read = async (id: string) =>
+        (
+          await request(app.getHttpServer())
+            .get(`/manager/orders/${id}`)
+            .set('Cookie', managerCookie)
+            .expect(200)
+        ).body as {
+          status: string;
+          paidKes: number;
+          paymentMismatch: boolean | null;
+          payments: {
+            method: string;
+            amountKes: number;
+            agent: { displayName: string };
+          }[];
+        };
+      const e = await read(exact);
+      expect(e).toMatchObject({
+        status: 'DELIVERED',
+        paidKes: 3999,
+        paymentMismatch: false,
+      });
+      expect(e.payments[0]).toMatchObject({ method: 'MPESA', amountKes: 3999 });
+      const sh = await read(short);
+      expect(sh).toMatchObject({ paidKes: 3500, paymentMismatch: true });
+
+      const open = await makeOrder('DISPATCHED', a.agentId);
+      expect((await read(open)).paymentMismatch).toBeNull();
+    });
   });
 });

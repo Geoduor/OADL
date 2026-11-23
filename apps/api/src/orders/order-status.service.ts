@@ -55,6 +55,11 @@ export class OrderStatusService {
     if (rule.needs === 'reason' && !input.reason) {
       throw new BadRequestException('A reason is required');
     }
+    if (rule.needs === 'payment' && !(input.paymentMethod && input.amountKes)) {
+      throw new BadRequestException(
+        'The payment method and the amount collected are required',
+      );
+    }
     if (rule.needs === 'date') {
       if (!input.scheduledDate) {
         throw new BadRequestException('A new delivery date is required');
@@ -107,6 +112,7 @@ export class OrderStatusService {
           status: input.to,
           assignedAgentId: newAgentId,
           ...(rule.countsAttempt ? { attemptCount: { increment: 1 } } : {}),
+          ...(rule.needs === 'payment' ? { deliveredAt: new Date() } : {}),
           ...(rule.needs === 'date' && input.scheduledDate
             ? { scheduledDate: new Date(input.scheduledDate) }
             : {}),
@@ -114,6 +120,22 @@ export class OrderStatusService {
       });
       if (count === 0) {
         throw new ConflictException('The order was changed by someone else');
+      }
+      // D34: the agent who delivered holds the money. The amount is whatever
+      // the agent collected; a difference from the order total is shown to
+      // the manager, not blocked. The row is append-only.
+      // TODO(confirm): stock is not deducted here yet (ROADMAP step 7).
+      if (rule.needs === 'payment' && input.paymentMethod && input.amountKes) {
+        await tx.payment.create({
+          data: {
+            orderId: order.id,
+            // Set: an agent can only act on an order assigned to them.
+            agentId: order.assignedAgentId as string,
+            method: input.paymentMethod,
+            amountKes: input.amountKes,
+            recordedByUserId: actor.id,
+          },
+        });
       }
       await tx.orderStatusHistory.create({
         data: {

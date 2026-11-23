@@ -11,6 +11,10 @@ const orderStatuses = [
   'CANCELLED',
 ] as const;
 
+// Whole shillings. TODO(confirm): the upper bound is only a typo guard, not a
+// client rule.
+const amountKes = z.number().int().min(1).max(1_000_000);
+
 // The body of a status change. What each target status needs (reason, agent,
 // date) comes from order-transitions.ts and is checked in the service.
 export const changeStatusSchema = z.object({
@@ -18,6 +22,8 @@ export const changeStatusSchema = z.object({
   reason: z.string().trim().min(1).max(500).optional(),
   agentUserId: z.string().min(1).max(64).optional(),
   scheduledDate: z.iso.date().optional(),
+  paymentMethod: z.enum(['CASH', 'MPESA']).optional(),
+  amountKes: amountKes.optional(),
 });
 
 export type ChangeStatusInput = z.infer<typeof changeStatusSchema>;
@@ -38,9 +44,11 @@ export type ListOrdersInput = z.infer<typeof listOrdersSchema>;
 // assign anything) and only the moves an agent can make (D27). The status
 // service still checks the transition table and the order's owner.
 export const agentChangeStatusSchema = z.object({
-  to: z.enum(['DISPATCHED', 'UNRESPONSIVE', 'RESCHEDULED']),
+  to: z.enum(['DISPATCHED', 'DELIVERED', 'UNRESPONSIVE', 'RESCHEDULED']),
   reason: z.string().trim().min(1).max(500).optional(),
   scheduledDate: z.iso.date().optional(),
+  paymentMethod: z.enum(['CASH', 'MPESA']).optional(),
+  amountKes: amountKes.optional(),
 });
 
 export type AgentChangeStatusInput = z.infer<typeof agentChangeStatusSchema>;

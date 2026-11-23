@@ -71,7 +71,13 @@ describe('order transitions', () => {
     }
   });
 
-  it('does not allow DELIVERED yet (needs payments and stock)', () => {
-    expect(TRANSITIONS.some((rule) => rule.to === 'DELIVERED')).toBe(false);
+  it('DELIVERED comes only from DISPATCHED, by the agent, with a payment (D34)', () => {
+    const rules = TRANSITIONS.filter((rule) => rule.to === 'DELIVERED');
+    expect(rules).toHaveLength(1);
+    expect(rules[0]).toMatchObject({
+      from: 'DISPATCHED',
+      actors: ['AGENT'],
+      needs: 'payment',
+    });
   });
 });
