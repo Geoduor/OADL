@@ -220,10 +220,16 @@ describe('Manager orders and status changes (e2e)', () => {
   it('rejects moves that are not in the lifecycle', async () => {
     const id = await makeOrder();
     await move(id, { to: 'ASSIGNED', agentUserId: agentA.userId }).expect(409); // not confirmed yet
-    await move(id, { to: 'DISPATCHED' }).expect(403); // agent-only move, from a manager
+    await move(id, { to: 'DISPATCHED' }).expect(409); // no such move from PLACED
     const order = await get(id);
     expect(order.status).toBe('PLACED');
     expect(order.history).toHaveLength(0);
+  });
+
+  it('keeps agent-only moves away from the manager', async () => {
+    const id = await makeOrder('ASSIGNED', agentA.agentId);
+    await move(id, { to: 'DISPATCHED' }).expect(403);
+    expect((await get(id)).status).toBe('ASSIGNED');
   });
 
   it('refuses an inactive or unknown agent', async () => {
