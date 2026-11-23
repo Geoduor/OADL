@@ -57,11 +57,11 @@ describe('order transitions', () => {
     ]);
   });
 
-  it('D33: reassignment needs a different agent and is closed once dispatched', () => {
+  it('D33: reassignment is closed once dispatched; only ASSIGNED to ASSIGNED needs a different agent', () => {
     expect(findTransition('ASSIGNED', 'ASSIGNED')?.differentAgent).toBe(true);
-    expect(findTransition('RESCHEDULED', 'ASSIGNED')?.differentAgent).toBe(
-      true,
-    );
+    expect(
+      findTransition('RESCHEDULED', 'ASSIGNED')?.differentAgent,
+    ).toBeFalsy();
     expect(findTransition('DISPATCHED', 'ASSIGNED')).toBeUndefined();
   });
 

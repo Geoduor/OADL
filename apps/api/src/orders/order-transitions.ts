@@ -72,13 +72,11 @@ export const TRANSITIONS: readonly TransitionRule[] = [
   { from: 'UNRESPONSIVE', to: 'CONFIRMED', actors: M, clearsAgent: true },
 
   { from: 'RESCHEDULED', to: 'DISPATCHED', actors: A },
-  {
-    from: 'RESCHEDULED',
-    to: 'ASSIGNED',
-    actors: M,
-    needs: 'agent',
-    differentAgent: true,
-  },
+  // D33: from RESCHEDULED the manager may pick any active agent, including
+  // the one who had the order (the failed attempt may not be the agent's
+  // fault). Only ASSIGNED to ASSIGNED requires a different agent, because
+  // otherwise nothing would change.
+  { from: 'RESCHEDULED', to: 'ASSIGNED', actors: M, needs: 'agent' },
   { from: 'RESCHEDULED', to: 'CANCELLED', actors: M, needs: 'reason' },
 ];
 
