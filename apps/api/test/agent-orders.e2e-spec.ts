@@ -136,6 +136,7 @@ describe('Agent orders (e2e)', () => {
       select: { id: true },
     });
     const ids = users.map((user) => user.id);
+    await prisma.payment.deleteMany({ where: { orderId: { in: orderIds } } });
     await prisma.orderStatusHistory.deleteMany({
       where: { orderId: { in: orderIds } },
     });
