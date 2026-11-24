@@ -43,8 +43,8 @@ export class AgentOrdersController {
     return this.orders.detail(user.id, id);
   }
 
-  // Dispatch, unresponsive or reschedule. DELIVERED needs a payment record
-  // and is built later; cancelling and assigning are the manager's.
+  // Dispatch, deliver (with payment, D34), unresponsive or reschedule.
+  // Cancelling and assigning are the manager's.
   @Post(':id/status')
   @HttpCode(200)
   async changeStatus(
@@ -54,6 +54,11 @@ export class AgentOrdersController {
   ) {
     requireAgent(user);
     await this.status.change(id, user, body);
+    // A delivered order leaves the agent's view at once (Q30 proposal), so
+    // there is no detail to return.
+    if (body.to === 'DELIVERED') {
+      return { id, status: 'DELIVERED' as const };
+    }
     return this.orders.detail(user.id, id);
   }
 }

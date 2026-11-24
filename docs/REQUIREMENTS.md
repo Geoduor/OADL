@@ -44,7 +44,7 @@ Status: Draft v0.1, 2026-11-15. Items depending on open questions are tagged wit
 - US-31: I get an in-app pop-up when an order is assigned to me, and see unread assignments after logging in.
 - US-32: I see only my orders, with customer name, phone (tap to call), county, location, products and amount. I never see other agents' details or orders, and I see a customer's details only while the order is assigned to me (D27).
 - US-33: I can mark an order **Dispatched**. This sends the customer an SMS.
-- US-34: I can mark an order **Delivered**, which requires choosing payment method (cash, M-Pesa or paybill) and confirming the amount collected.
+- US-34: I can mark an order **Delivered**, which requires choosing the payment method (cash or M-Pesa to my own account) and entering the amount collected (D34). If it differs from the order total it is accepted and flagged to the manager.
 - US-35: I can mark an order **Unresponsive** (customer did not answer) or **Rescheduled** (with a new date).
 - US-36: I can see my current stock per product.
 

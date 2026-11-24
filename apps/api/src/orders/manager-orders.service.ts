@@ -17,6 +17,7 @@ const listSelect = {
   createdAt: true,
   county: { select: { id: true, name: true } },
   assignedAgent: { select: { userId: true, displayName: true } },
+  payments: { select: { amountKes: true } },
 } as const;
 
 const detailSelect = {
@@ -29,6 +30,16 @@ const detailSelect = {
       quantity: true,
       lineTotalKes: true,
       product: { select: { name: true } },
+    },
+  },
+  // Who collected what, by which method (D34).
+  payments: {
+    orderBy: { createdAt: 'asc' },
+    select: {
+      method: true,
+      amountKes: true,
+      createdAt: true,
+      agent: { select: { displayName: true } },
     },
   },
   history: {
@@ -77,7 +88,7 @@ export class ManagerOrdersService {
         skip: query.offset,
       }),
     ]);
-    return { total, orders };
+    return { total, orders: orders.map(withPaymentSummary) };
   }
 
   async detail(id: string) {
@@ -88,6 +99,21 @@ export class ManagerOrdersService {
     if (!order) {
       throw new NotFoundException('Order not found');
     }
-    return order;
+    return withPaymentSummary(order);
   }
+}
+
+// D34: the agent records whatever they collected. When it differs from the
+// order total the manager sees `paymentMismatch: true`. Null while nothing
+// has been paid. Computed on read, never stored, so it cannot drift.
+function withPaymentSummary<
+  T extends { totalKes: number; payments: { amountKes: number }[] },
+>(order: T) {
+  const paidKes = order.payments.reduce((sum, p) => sum + p.amountKes, 0);
+  const hasPayment = order.payments.length > 0;
+  return {
+    ...order,
+    paidKes,
+    paymentMismatch: hasPayment ? paidKes !== order.totalKes : null,
+  };
 }

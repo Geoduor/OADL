@@ -42,7 +42,7 @@ Rule for quantities without a defined price: **not allowed** until Q2 is answere
 `id`, `orderId`, `fromStatus`, `toStatus`, `changedByUserId` (nullable for system), `reason`, `createdAt`.
 
 ### Payment (append-only)
-`id`, `orderId`, `method` (`CASH` | `MPESA` | `PAYBILL`), `amountKes`, `reference` (nullable, for M-Pesa or paybill code; whether required is UNCONFIRMED), `recordedByUserId`, `createdAt`.
+Implemented (migration `add_payments`), per D34. `id`, `orderId`, `agentId` (the agent who collected and holds the money), `method` (`CASH` | `MPESA`; `PAYBILL` was dropped because customers pay the agent, and can be added by a migration if a company paybill takes customer payments), `amountKes`, `recordedByUserId`, `createdAt`. No `reference` column: no M-Pesa code is required for now (D34). The manager's order views compute `paidKes` and `paymentMismatch` (not stored).
 
 ### StockMovement (append-only ledger)
 `id`, `agentId`, `productId`, `type`, `quantity` (signed integer), `orderId` (nullable), `note`, `createdByUserId`, `createdAt`.
