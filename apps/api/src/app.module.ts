@@ -5,6 +5,7 @@ import { AuthenticationModule } from '@nestjs/authentication';
 import { AgentsModule } from './agents/agents.module.js';
 import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
+import { StockModule } from './stock/stock.module.js';
 import { AuthModule } from './auth/auth.module.js';
 import { allowedOrigins } from './config/origins.js';
 import { CountiesModule } from './counties/counties.module.js';
@@ -31,6 +32,7 @@ import { ProductsModule } from './products/products.module.js';
     }),
     AuthModule,
     AgentsModule,
+    StockModule,
     ProductsModule,
     CountiesModule,
     OrdersModule,
