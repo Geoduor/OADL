@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { PrismaModule } from '../prisma/prisma.module.js';
+import { StockModule } from '../stock/stock.module.js';
 import { TurnstileModule } from '../turnstile/turnstile.module.js';
 import { AgentOrdersController } from './agent-orders.controller.js';
 import { AgentOrdersService } from './agent-orders.service.js';
@@ -10,7 +11,7 @@ import { OrdersController } from './orders.controller.js';
 import { OrdersService } from './orders.service.js';
 
 @Module({
-  imports: [PrismaModule, TurnstileModule],
+  imports: [PrismaModule, TurnstileModule, StockModule],
   controllers: [
     OrdersController,
     ManagerOrdersController,

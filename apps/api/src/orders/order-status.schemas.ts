@@ -24,6 +24,10 @@ export const changeStatusSchema = z.object({
   scheduledDate: z.iso.date().optional(),
   paymentMethod: z.enum(['CASH', 'MPESA']).optional(),
   amountKes: amountKes.optional(),
+  // Manager only: assign even though the agent lacks stock for the items
+  // (docs/ORDER_LIFECYCLE.md, "manual assign warns and requires manager
+  // confirmation to override").
+  overrideStock: z.boolean().optional(),
 });
 
 export type ChangeStatusInput = z.infer<typeof changeStatusSchema>;

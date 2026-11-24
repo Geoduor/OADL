@@ -23,6 +23,7 @@ model Product {
 
   prices     ProductPrice[]
   orderItems OrderItem[]
+  stockMovements StockMovement[]
 
   @@map("products")
 }
@@ -100,6 +101,7 @@ model Order {
   items         OrderItem[]
   history       OrderStatusHistory[]
   payments      Payment[]
+  stockMovements StockMovement[]
 
   @@index([status])
   @@index([countyId])
@@ -171,6 +173,7 @@ model User {
   agent        Agent?
   statusChanges OrderStatusHistory[]
   paymentsRecorded Payment[]
+  stockMovementsCreated StockMovement[]
 
   @@map("users")
 }
@@ -207,6 +210,7 @@ model Agent {
   orders      Order[]
   history     OrderStatusHistory[]
   payments    Payment[]
+  stockMovements StockMovement[]
   createdAt   DateTime      @default(now())
 
   @@map("agents")
@@ -250,4 +254,38 @@ model Payment {
   @@index([orderId])
   @@index([agentId, method])
   @@map("payments")
+}
+
+enum StockMovementType {
+  ISSUE
+  DELIVERY
+  RETURN_TO_STORE
+  ADJUSTMENT
+}
+
+// Append-only stock ledger per agent and product, in units (D7, D35). On hand
+// is the sum of an agent's movements; it is never stored as a single number.
+// Signs: ISSUE +, DELIVERY -, RETURN_TO_STORE -, ADJUSTMENT +/-.
+model StockMovement {
+  id              String            @id @default(uuid())
+  agentId         String
+  productId       String
+  type            StockMovementType
+  quantity        Int
+  orderId         String?
+  note            String?
+  createdByUserId String
+  createdAt       DateTime          @default(now())
+
+  agent     Agent   @relation(fields: [agentId], references: [id])
+  product   Product @relation(fields: [productId], references: [id])
+  order     Order?  @relation(fields: [orderId], references: [id])
+  createdBy User    @relation(fields: [createdByUserId], references: [id])
+
+  // An order can deduct a product at most once, even if two requests race.
+  // (Rows without an order are not constrained: Postgres treats NULLs as
+  // distinct.)
+  @@unique([orderId, productId, type])
+  @@index([agentId, productId])
+  @@map("stock_movements")
 }

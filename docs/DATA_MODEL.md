@@ -45,6 +45,8 @@ Rule for quantities without a defined price: **not allowed** until Q2 is answere
 Implemented (migration `add_payments`), per D34. `id`, `orderId`, `agentId` (the agent who collected and holds the money), `method` (`CASH` | `MPESA`; `PAYBILL` was dropped because customers pay the agent, and can be added by a migration if a company paybill takes customer payments), `amountKes`, `recordedByUserId`, `createdAt`. No `reference` column: no M-Pesa code is required for now (D34). The manager's order views compute `paidKes` and `paymentMismatch` (not stored).
 
 ### StockMovement (append-only ledger)
+Implemented (migration `add_stock_movements`), per D35. Quantities are in units (`OrderItem.quantity`). One `DELIVERY` row per order and product (unique key). Delivery rows are written in the same transaction as the status change. A negative on-hand is allowed after a delivery and shown as `needsAttention` to the manager.
+
 `id`, `agentId`, `productId`, `type`, `quantity` (signed integer), `orderId` (nullable), `note`, `createdByUserId`, `createdAt`.
 
 | Type | Sign | When |

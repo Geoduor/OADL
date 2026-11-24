@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import type { AuthUser } from '../auth/auth-types.js';
 import { PrismaService } from '../prisma/prisma.service.js';
+import { StockService } from '../stock/stock.service.js';
 import type { ChangeStatusInput } from './order-status.schemas.js';
 import { findTransition, type OrderStatusName } from './order-transitions.js';
 
@@ -20,7 +21,10 @@ import { findTransition, type OrderStatusName } from './order-transitions.js';
 // They will be queued in the outbox inside this transaction.
 @Injectable()
 export class OrderStatusService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly stock: StockService,
+  ) {}
 
   async change(orderId: string, actor: AuthUser, input: ChangeStatusInput) {
     const order = await this.prisma.order.findUnique({
@@ -72,6 +76,7 @@ export class OrderStatusService {
     }
 
     let newAgentId: string | null = order.assignedAgentId;
+    let overridden = false;
     if (rule.needs === 'agent') {
       if (!input.agentUserId) {
         throw new BadRequestException('An agent is required');
@@ -91,9 +96,41 @@ export class OrderStatusService {
         throw new BadRequestException('The order is already with that agent');
       }
       newAgentId = agent.id;
-      // TODO(confirm): D8 says auto-assign uses the order's county, and the
-      // lifecycle requires a stock check. Manual assignment here does neither
-      // yet; the stock module does not exist (ROADMAP step 7).
+
+      // Stock check (D35): the agent needs enough available stock for every
+      // item. The manager can override after being warned. The check is
+      // advisory under concurrency: with one manager that is acceptable.
+      const items = await this.prisma.orderItem.findMany({
+        where: { orderId: order.id },
+        select: {
+          productId: true,
+          quantity: true,
+          product: { select: { name: true } },
+        },
+      });
+      const shortfalls = await this.stock.shortfalls(
+        this.prisma,
+        agent.id,
+        items,
+        order.id,
+      );
+      if (shortfalls.length > 0 && !input.overrideStock) {
+        const names = new Map(
+          items.map((item) => [item.productId, item.product.name]),
+        );
+        throw new ConflictException({
+          message: 'That agent does not have enough stock for this order',
+          code: 'INSUFFICIENT_STOCK',
+          shortfalls: shortfalls.map((s) => ({
+            productName: names.get(s.productId) ?? 'Unknown product',
+            needed: s.needed,
+            available: s.available,
+          })),
+        });
+      }
+      overridden = shortfalls.length > 0;
+      // TODO(confirm): D8 auto-assign (county, stock, fewest open orders) is
+      // not built. Manual assignment does not check county coverage.
     }
     if (rule.clearsAgent) {
       newAgentId = null;
@@ -124,7 +161,6 @@ export class OrderStatusService {
       // D34: the agent who delivered holds the money. The amount is whatever
       // the agent collected; a difference from the order total is shown to
       // the manager, not blocked. The row is append-only.
-      // TODO(confirm): stock is not deducted here yet (ROADMAP step 7).
       if (rule.needs === 'payment' && input.paymentMethod && input.amountKes) {
         await tx.payment.create({
           data: {
@@ -137,12 +173,45 @@ export class OrderStatusService {
           },
         });
       }
+      // Delivery takes the items out of the delivering agent's stock. It is
+      // never blocked: if the ledger says the agent had less, on-hand goes
+      // negative and the manager sees it flagged. The unique key on
+      // (order, product, type) stops a second deduction.
+      if (rule.needs === 'payment' && order.assignedAgentId) {
+        const items = await tx.orderItem.findMany({
+          where: { orderId: order.id },
+          select: { productId: true, quantity: true },
+        });
+        // One row per product, even if an order had two lines for it (the
+        // unique key allows one deduction per order and product).
+        const perProduct = new Map<string, number>();
+        for (const item of items) {
+          perProduct.set(
+            item.productId,
+            (perProduct.get(item.productId) ?? 0) + item.quantity,
+          );
+        }
+        await tx.stockMovement.createMany({
+          data: [...perProduct].map(([productId, quantity]) => ({
+            agentId: order.assignedAgentId as string, // checked just above
+            productId,
+            type: 'DELIVERY' as const,
+            quantity: -quantity,
+            orderId: order.id,
+            createdByUserId: actor.id,
+          })),
+        });
+      }
       await tx.orderStatusHistory.create({
         data: {
           orderId: order.id,
           fromStatus: order.status,
           toStatus: input.to,
-          reason: input.reason ?? null,
+          reason:
+            input.reason ??
+            (overridden
+              ? 'Assigned without enough stock (manager override)'
+              : null),
           agentId: newAgentId,
           changedByUserId: actor.id,
         },
