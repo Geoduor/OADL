@@ -33,3 +33,14 @@ export const listOrdersSchema = z.object({
 });
 
 export type ListOrdersInput = z.infer<typeof listOrdersSchema>;
+
+// What an agent may send. Narrower on purpose: no agent id (an agent cannot
+// assign anything) and only the moves an agent can make (D27). The status
+// service still checks the transition table and the order's owner.
+export const agentChangeStatusSchema = z.object({
+  to: z.enum(['DISPATCHED', 'UNRESPONSIVE', 'RESCHEDULED']),
+  reason: z.string().trim().min(1).max(500).optional(),
+  scheduledDate: z.iso.date().optional(),
+});
+
+export type AgentChangeStatusInput = z.infer<typeof agentChangeStatusSchema>;
