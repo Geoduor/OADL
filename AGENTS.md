@@ -30,7 +30,7 @@ Monorepo (pnpm workspaces). See `docs/FILE_STRUCTURE.md`.
 - `apps/portal`: React + Vite (manager and agent, agent side is a PWA)
 - `packages/shared`: enums, constants and types shared by all apps (no business logic, no secrets)
 
-`apps/api` is scaffolded (2026-11-15): NestJS 12, **ESM**, TypeScript strict, Vitest, oxlint. In ESM, relative imports end in `.js`, `__dirname` does not exist (use `import.meta.dirname`), and mocks are `vi.fn()`. See `apps/api/AGENTS.md`. The storefront, portal and shared package are not created yet.
+`apps/api` is scaffolded (2026-11-15): NestJS 12, **ESM**, TypeScript strict, Vitest, oxlint. In ESM, relative imports end in `.js`, `__dirname` does not exist (use `import.meta.dirname`), and mocks are `vi.fn()`. See `apps/api/AGENTS.md`. `apps/portal` is scaffolded (2026-11-25): React 19, Vite 8, React Router 7 (declarative, pinned), Vitest, oxlint. The storefront and shared package are not created yet.
 
 Database layer (D17): **Prisma 7.10.1, pinned**. Never install `prisma@latest` (npm's latest CLI was a release candidate on 2026-11-16). The generated client lives in `apps/api/src/generated/prisma` and is **not committed**: run `pnpm --filter api prisma:generate` after cloning or changing `schema.prisma` (`pnpm build` does it). Use Prisma through `PrismaService` / `PrismaModule`. Run the Prisma CLI as `pnpm exec prisma ...` inside `apps/api`. Use `migrate dev` locally only; production uses `migrate deploy`.
 
@@ -63,6 +63,7 @@ Available now (run from the repo root):
 pnpm install
 pnpm --filter api prisma:generate   # after clone or schema change
 pnpm dev:api                  # NestJS API with auto-reload, http://localhost:3000
+pnpm dev:portal               # manager and agent portal, http://localhost:5173 (proxies /api to the API)
 pnpm build
 pnpm lint
 pnpm typecheck
@@ -72,7 +73,7 @@ pnpm --filter api test:e2e    # API end-to-end tests (needs the local database, 
 
 From `apps/api`: `pnpm exec prisma migrate dev --name <change>`, `pnpm exec prisma validate`, `pnpm exec prisma db seed` (seeds PROSTGUARD only; safe to run repeatedly).
 
-Planned, **not created yet** (update this section when they exist): storefront and portal dev commands.
+Planned, **not created yet** (update this section when it exists): storefront dev command.
 
 ## 8. Definition of done
 
