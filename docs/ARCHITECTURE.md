@@ -9,7 +9,7 @@ One NestJS API is the only thing that touches the database and external services
 ```
  Facebook link ──> [ Storefront (Next.js, Vercel) ] ──┐
                                                        │ HTTPS (public order API)
- Manager / Agent ─> [ Portal (React+Vite, PWA) ] ──────┤ HTTPS + JWT, WebSocket
+ Manager / Agent ─> [ Portal (React+Vite, PWA) ] ──────┤ HTTPS + session cookie (D30), WebSocket
                                                        ▼
                                           [ API (NestJS, Render) ]
                                            │  modules: auth, orders, assignment,
