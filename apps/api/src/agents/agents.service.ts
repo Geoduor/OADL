@@ -110,6 +110,44 @@ export class AgentsService {
     });
   }
 
+  // Re-enabling restores a disabled agent: sign-in works again, with the
+  // counties they had (D37). Only for someone who was once approved. A
+  // rejected registration has no agent profile, so it must be approved
+  // instead (it is not shown as re-enableable).
+  async enable(userId: string) {
+    return this.prisma.$transaction(async (tx) => {
+      const agent = await tx.agent.findUnique({
+        where: { userId },
+        select: { id: true, user: { select: { status: true } } },
+      });
+      if (!agent) {
+        const user = await tx.user.findFirst({
+          where: { id: userId, role: 'AGENT' },
+          select: { id: true },
+        });
+        if (!user) {
+          throw new NotFoundException('Agent not found');
+        }
+        throw new ConflictException(
+          'This registration was never approved, so it cannot be re-enabled',
+        );
+      }
+      const { count } = await tx.user.updateMany({
+        where: { id: userId, status: 'DISABLED' },
+        data: { status: 'ACTIVE' },
+      });
+      if (count === 0) {
+        throw new ConflictException('This agent is not disabled');
+      }
+      const restored = await tx.agent.update({
+        where: { id: agent.id },
+        data: { active: true },
+        select: agentSelect,
+      });
+      return toView(restored);
+    });
+  }
+
   private async validCountyIds(countyIds: string[]): Promise<string[]> {
     const unique = [...new Set(countyIds)];
     const found = await this.prisma.county.count({
