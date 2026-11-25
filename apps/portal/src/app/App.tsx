@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from 'react-router';
 import { Layout } from '../components/Layout.js';
 import { AgentHome } from '../routes/agent/AgentHome.js';
 import { LoginPage } from '../routes/LoginPage.js';
+import { AgentsPage } from '../routes/manager/AgentsPage.js';
 import { OrdersPage } from '../routes/manager/OrdersPage.js';
 import { HomeRedirect, RequireAuth, RequireRole } from './guards.js';
 
@@ -14,6 +15,7 @@ export function App() {
           <Route index element={<HomeRedirect />} />
           <Route element={<RequireRole role="MANAGER" />}>
             <Route path="/manager/orders" element={<OrdersPage />} />
+            <Route path="/manager/agents" element={<AgentsPage />} />
           </Route>
           <Route element={<RequireRole role="AGENT" />}>
             <Route path="/agent" element={<AgentHome />} />

@@ -10,6 +10,7 @@ export function Layout() {
         {user?.role === 'MANAGER' && (
           <nav className="nav" aria-label="Main">
             <NavLink to="/manager/orders">Orders</NavLink>
+            <NavLink to="/manager/agents">Agents</NavLink>
           </nav>
         )}
         <span className="spacer" />
