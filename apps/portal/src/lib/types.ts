@@ -96,3 +96,14 @@ export interface StockShortfall {
   needed: number;
   available: number;
 }
+
+export interface Product {
+  id: string;
+  name: string;
+  slug: string;
+  prices: {
+    quantity: number;
+    priceKes: number;
+    compareAtPriceKes: number | null;
+  }[];
+}

@@ -372,3 +372,8 @@ a {
   display: grid;
   gap: 0.5rem;
 }
+
+.linklike {
+  text-decoration: none;
+  display: inline-block;
+}
