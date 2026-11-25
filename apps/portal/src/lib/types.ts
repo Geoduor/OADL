@@ -65,3 +65,34 @@ export interface AgentView {
   active: boolean;
   counties: County[];
 }
+
+export interface ManagerOrderDetail extends ManagerOrderRow {
+  source: string;
+  notes: string | null;
+  deliveredAt: string | null;
+  items: {
+    quantity: number;
+    lineTotalKes: number;
+    product: { name: string };
+  }[];
+  payments: {
+    method: 'CASH' | 'MPESA';
+    amountKes: number;
+    createdAt: string;
+    agent: { displayName: string } | null;
+  }[];
+  history: {
+    fromStatus: OrderStatus | null;
+    toStatus: OrderStatus;
+    reason: string | null;
+    createdAt: string;
+    agent: { displayName: string } | null;
+    changedBy: { name: string; role: Role } | null;
+  }[];
+}
+
+export interface StockShortfall {
+  productName: string;
+  needed: number;
+  available: number;
+}

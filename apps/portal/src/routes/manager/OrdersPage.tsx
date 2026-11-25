@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router';
 import { api } from '../../lib/api.js';
 import { formatKes, formatNairobi } from '../../lib/format.js';
 import {
@@ -87,7 +88,11 @@ export function OrdersPage() {
               <tbody>
                 {data.orders.map((order) => (
                   <tr key={order.id}>
-                    <td>{order.orderNo}</td>
+                    <td>
+                      <Link to={`/manager/orders/${order.id}`}>
+                        {order.orderNo}
+                      </Link>
+                    </td>
                     <td>
                       <span className={`badge ${order.status.toLowerCase()}`}>
                         {order.status}
