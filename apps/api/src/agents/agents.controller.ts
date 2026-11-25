@@ -58,6 +58,13 @@ export class AgentsController {
     return this.agents.setCounties(userId, body.countyIds);
   }
 
+  @Post(':userId/enable')
+  @HttpCode(200)
+  enable(@CurrentUser() user: AuthUser, @Param('userId') userId: string) {
+    requireManager(user);
+    return this.agents.enable(userId);
+  }
+
   @Post(':userId/disable')
   @HttpCode(204)
   async disable(

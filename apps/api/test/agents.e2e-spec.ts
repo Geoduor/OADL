@@ -287,4 +287,56 @@ describe('Agent approval (e2e)', () => {
       .set(asManager())
       .expect(404);
   });
+
+  it('re-enables a disabled agent with their counties (D37)', async () => {
+    const http = app.getHttpServer();
+    const number = phone(9);
+    const pending = await makeUser(number, 'AGENT', 'PENDING');
+    await request(http)
+      .post(`/agents/${pending.id}/approve`)
+      .set(asManager())
+      .send({ countyIds: [countyIds[0], countyIds[1]] })
+      .expect(200);
+    await request(http)
+      .post(`/agents/${pending.id}/disable`)
+      .set(asManager())
+      .expect(204);
+    await login(number).expect(403);
+
+    const res = await request(http)
+      .post(`/agents/${pending.id}/enable`)
+      .set(asManager())
+      .expect(200);
+    const body = res.body as { active: boolean; counties: { id: string }[] };
+    expect(body.active).toBe(true);
+    expect(body.counties).toHaveLength(2);
+    await login(number).expect(200);
+
+    // Already active: nothing to re-enable.
+    await request(http)
+      .post(`/agents/${pending.id}/enable`)
+      .set(asManager())
+      .expect(409);
+  });
+
+  it('cannot re-enable a rejected registration, an unknown user or as an agent', async () => {
+    const http = app.getHttpServer();
+    const rejected = await makeUser(phone(10), 'AGENT', 'PENDING');
+    await request(http)
+      .post(`/agents/${rejected.id}/disable`)
+      .set(asManager())
+      .expect(204);
+    await request(http)
+      .post(`/agents/${rejected.id}/enable`)
+      .set(asManager())
+      .expect(409);
+    await request(http)
+      .post('/agents/not-a-user/enable')
+      .set(asManager())
+      .expect(404);
+    await request(http)
+      .post(`/agents/${rejected.id}/enable`)
+      .set({ Cookie: agentCookie })
+      .expect(403);
+  });
 });
