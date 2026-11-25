@@ -40,6 +40,9 @@ export function OrdersPage() {
     <section>
       <div className="row">
         <h1>Orders</h1>
+        <Link to="/manager/orders/new" className="secondary linklike">
+          New order
+        </Link>
         <label className="inline">
           Status
           <select
