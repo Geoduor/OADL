@@ -107,3 +107,31 @@ export interface Product {
     compareAtPriceKes: number | null;
   }[];
 }
+
+export interface AgentOrder {
+  id: string;
+  orderNo: string;
+  status: OrderStatus;
+  customerName: string;
+  customerPhone: string;
+  location: string;
+  totalKes: number;
+  scheduledDate: string | null;
+  attemptCount: number;
+  createdAt: string;
+  county: { name: string };
+  items: {
+    quantity: number;
+    lineTotalKes: number;
+    product: { name: string };
+  }[];
+}
+
+export interface StockRow {
+  productId: string;
+  productName: string;
+  onHand: number;
+  reserved: number;
+  available: number;
+  needsAttention: boolean;
+}

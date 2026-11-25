@@ -13,6 +13,14 @@ export function Layout() {
             <NavLink to="/manager/agents">Agents</NavLink>
           </nav>
         )}
+        {user?.role === 'AGENT' && (
+          <nav className="nav" aria-label="Main">
+            <NavLink to="/agent" end>
+              Orders
+            </NavLink>
+            <NavLink to="/agent/stock">My stock</NavLink>
+          </nav>
+        )}
         <span className="spacer" />
         <span className="who">{user?.name}</span>
         <button type="button" className="link" onClick={() => void signOut()}>
