@@ -78,6 +78,8 @@ export function AgentsPage() {
         body: { countyIds: draft },
       }),
     );
+  const enable = (userId: string) =>
+    run(() => api(`/agents/${userId}/enable`, { method: 'POST' }));
   const disable = (userId: string, label: string) => {
     if (!window.confirm(`${label}? They will no longer be able to sign in.`)) {
       return Promise.resolve();
@@ -211,6 +213,16 @@ export function AgentsPage() {
                           }
                         >
                           Disable
+                        </button>
+                      )}
+                      {(!agent.active || agent.status !== 'ACTIVE') && (
+                        <button
+                          type="button"
+                          className="link"
+                          disabled={busy}
+                          onClick={() => void enable(agent.userId)}
+                        >
+                          Re-enable
                         </button>
                       )}
                     </div>
