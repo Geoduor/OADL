@@ -44,3 +44,24 @@ export interface ManagerOrderList {
   total: number;
   orders: ManagerOrderRow[];
 }
+
+export interface County {
+  id: string;
+  name: string;
+}
+
+export interface PendingRegistration {
+  id: string;
+  name: string;
+  phone: string;
+  createdAt: string;
+}
+
+export interface AgentView {
+  userId: string;
+  displayName: string;
+  phone: string;
+  status: string;
+  active: boolean;
+  counties: County[];
+}

@@ -257,3 +257,62 @@ tbody tr:last-child td {
   background: var(--warn-bg);
   color: var(--warn);
 }
+
+h2 {
+  font-size: 1.1rem;
+  margin: 1.5rem 0 0.5rem;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.6rem;
+}
+
+.item {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 0.8rem 1rem;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.editor {
+  margin-top: 0.8rem;
+  display: grid;
+  gap: 0.8rem;
+}
+
+.picker {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.picker p {
+  margin: 0;
+}
+
+.picker-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 0.3rem 0.8rem;
+  max-height: 240px;
+  overflow-y: auto;
+  padding: 0.5rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.check {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.92rem;
+}
