@@ -1,6 +1,8 @@
 import { Navigate, Route, Routes } from 'react-router';
 import { Layout } from '../components/Layout.js';
-import { AgentHome } from '../routes/agent/AgentHome.js';
+import { AgentOrderPage } from '../routes/agent/AgentOrderPage.js';
+import { AgentOrdersPage } from '../routes/agent/AgentOrdersPage.js';
+import { AgentStockPage } from '../routes/agent/AgentStockPage.js';
 import { LoginPage } from '../routes/LoginPage.js';
 import { AgentsPage } from '../routes/manager/AgentsPage.js';
 import { CreateOrderPage } from '../routes/manager/CreateOrderPage.js';
@@ -22,7 +24,9 @@ export function App() {
             <Route path="/manager/agents" element={<AgentsPage />} />
           </Route>
           <Route element={<RequireRole role="AGENT" />}>
-            <Route path="/agent" element={<AgentHome />} />
+            <Route path="/agent" element={<AgentOrdersPage />} />
+            <Route path="/agent/orders/:id" element={<AgentOrderPage />} />
+            <Route path="/agent/stock" element={<AgentStockPage />} />
           </Route>
         </Route>
       </Route>
