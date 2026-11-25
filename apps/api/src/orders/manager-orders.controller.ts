@@ -10,6 +10,11 @@ import {
 } from '@nestjs/common';
 import { CurrentUser } from '@nestjs/authentication';
 import type { AuthUser } from '../auth/auth-types.js';
+import {
+  managerCreateOrderSchema,
+  type ManagerCreateOrderInput,
+} from './manager-create-order.schema.js';
+import { OrdersService } from './orders.service.js';
 import { ManagerOrdersService } from './manager-orders.service.js';
 import {
   changeStatusSchema,
@@ -32,6 +37,7 @@ export class ManagerOrdersController {
   constructor(
     private readonly orders: ManagerOrdersService,
     private readonly status: OrderStatusService,
+    private readonly publicOrders: OrdersService,
   ) {}
 
   @Get()
@@ -41,6 +47,17 @@ export class ManagerOrdersController {
   ) {
     requireManager(user);
     return this.orders.list(query);
+  }
+
+  // The manager enters an order for a customer who contacted him another way.
+  @Post()
+  async create(
+    @CurrentUser() user: AuthUser,
+    @Body({ schema: managerCreateOrderSchema }) body: ManagerCreateOrderInput,
+  ) {
+    requireManager(user);
+    const id = await this.publicOrders.createByManager(user, body);
+    return this.orders.detail(id);
   }
 
   @Get(':id')

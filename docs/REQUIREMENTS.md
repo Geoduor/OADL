@@ -28,7 +28,7 @@ Status: Draft v0.1, 2026-11-15. Items depending on open questions are tagged wit
 
 ### 2.2 Manager dashboard
 - US-10: I see new orders in real time (pop-up plus list) and unassigned orders in a queue.
-- US-11: I can create an order on behalf of a customer (for orders that came through WhatsApp).
+- US-11: I can create an order on behalf of a customer (for orders that came through WhatsApp, phone or in person). It starts Confirmed. I can set a different total if I give a reason (D36).
 - US-12: I can assign an order to an agent manually, reassign it, or press **Auto-assign**.
 - US-13: Auto-assign picks an active agent covering the order's county, who has enough stock for every item, and who has the fewest open orders. If none qualifies, the order stays unassigned with a reason shown.
 - US-14: I can filter orders by status, agent, county and date, and see an order's full history.

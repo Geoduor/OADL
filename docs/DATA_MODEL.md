@@ -33,7 +33,7 @@ Observed in the sheet and to be confirmed (Q2): PROSTGUARD quantity 1 = 3,999; 2
 Rule for quantities without a defined price: **not allowed** until Q2 is answered.
 
 ### Order
-`id`, `orderNo` (unique, human readable; proposal `OADL-YYMMDD-####`), `idempotencyKey` (unique, nullable), `source` (`STOREFRONT` | `MANAGER_CREATED`), `customerName`, `customerPhone` (E.164), `countyId`, `location` (free text, required; D20 replaced the earlier `town` + optional `addressText` split), `landingSlug` (nullable), `utmSource`, `utmMedium`, `utmCampaign`, `utmContent` (all nullable, from the ad link), `status`, `assignedAgentId` (nullable), `scheduledDate` (nullable date; meaning per Q1), `totalKes`, `attemptCount` (default 0), `notes`, `createdAt`, `updatedAt`, `deliveredAt`.
+`id`, `orderNo` (unique, human readable; proposal `OADL-YYMMDD-####`), `idempotencyKey` (unique, nullable), `source` (`STOREFRONT` | `MANAGER_CREATED`; manager-created orders start `CONFIRMED` and may carry a manager-set `totalKes`, with the reason in the first history row, D36), `customerName`, `customerPhone` (E.164), `countyId`, `location` (free text, required; D20 replaced the earlier `town` + optional `addressText` split), `landingSlug` (nullable), `utmSource`, `utmMedium`, `utmCampaign`, `utmContent` (all nullable, from the ad link), `status`, `assignedAgentId` (nullable), `scheduledDate` (nullable date; meaning per Q1), `totalKes`, `attemptCount` (default 0), `notes`, `createdAt`, `updatedAt`, `deliveredAt`.
 
 ### OrderItem
 `id`, `orderId`, `productId`, `quantity`, `lineTotalKes`. Price is **copied at purchase time** from `ProductPrice`, so later price edits never change old orders.
