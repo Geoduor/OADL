@@ -58,7 +58,7 @@ Keep `.env.example` in sync with this table.
 - Database migration reviewed; a backup taken before applying to production.
 - Seed data (counties, products, prices) confirmed with the client (Q2, Q4).
 - Smoke test: place an order, assign, dispatch, deliver, check the stock ledger, the SMS and the sheet row.
-- Health endpoint returns OK; error tracking and log access in place.
+- Health endpoint `GET /health` returns `{"status":"ok"}` (200; 503 if the database is down); set it as the Render health check path; error tracking and log access in place.
 - Rollback plan written down.
 
 ## Operations
