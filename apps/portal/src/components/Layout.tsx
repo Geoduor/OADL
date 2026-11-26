@@ -12,6 +12,7 @@ export function Layout() {
             <NavLink to="/manager/orders">Orders</NavLink>
             <NavLink to="/manager/agents">Agents</NavLink>
             <NavLink to="/manager/stock">Stock</NavLink>
+            <NavLink to="/manager/payments">Payments</NavLink>
           </nav>
         )}
         {user?.role === 'AGENT' && (
