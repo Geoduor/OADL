@@ -47,6 +47,18 @@ Recommended order:
 
 Sources: [Render static sites](https://render.com/docs/static-sites), [Render Next.js](https://render.com/docs/deploy-nextjs-app), [Render redirects and rewrites](https://render.com/docs/redirects-rewrites), [Render monorepos](https://render.com/docs/monorepo-support), [Vercel Terms](https://vercel.com/terms), [Vercel Hobby plan](https://vercel.com/docs/plans/hobby), [Render pricing](https://render.com/pricing), [Render Postgres backups](https://render.com/docs/postgresql-backups), [Prisma on Render](https://www.prisma.io/docs/orm/v7/prisma-client/deployment/traditional/deploy-to-render), [Turnstile plans](https://developers.cloudflare.com/turnstile/plans), [KeNIC registration](https://kenic.or.ke/ke-domain-registration-process/).
 
+## Staging on Render: what was done and learned (2026-11-27)
+
+Tested by actually deploying (frankfurt, all paid): `oadl-db-staging` (Postgres 18, 0.1c-256mb, 1 GB), `oadl-api-staging` (0.5c-512mb), `oadl-storefront-staging` (0.5c-512mb). Portal static site not yet created.
+
+- **API service:** Build `NODE_ENV=development pnpm install --frozen-lockfile && pnpm --filter api build`; Pre-Deploy `pnpm --filter api exec prisma migrate deploy` (worked: all migrations applied); Start `pnpm --filter api start:prod`; Health Check Path `/health`. Env: `NODE_VERSION=24`, `NODE_ENV=production`, `DATABASE_URL` (**internal** URL), `CAPTCHA_SECRET`, `CORS_ORIGINS`. Render detected port 10000 by itself. First deploy took about 3 minutes.
+- **Storefront service:** Build `NODE_ENV=development pnpm install --frozen-lockfile && pnpm --filter storefront build`; Start `pnpm --filter storefront start:prod`. `NEXT_PUBLIC_*` values are baked in at build time, so changing one needs a redeploy.
+- **Staging Turnstile:** Cloudflare's published test keys (always pass): site key `1x00000000000000000000AA`, secret `1x0000000000000000000000000000000AA` (verified in Cloudflare's testing docs). They give no real bot protection: replace both before launch.
+- **Do not run one-off commands in Render's web shell on a 512 MB service.** `create-manager` ran the instance out of memory ("Ran out of memory (used over 512MB)"), the shell disconnected silently and the API restarted. Run `prisma db seed` and `create-manager` from a developer machine instead, with `DATABASE_URL` set to the database's **External** URL for that command only, adding `?sslmode=require` (pg treats it as verify-full; a harmless warning is printed). Close the terminal afterwards.
+- **Database inbound rule:** Render creates it as `0.0.0.0/0`. Remove it once seeding is done (services use the private network). Re-add only a single IP when needed.
+- Seed is silent on success. Check with `GET /counties` and `GET /products` on the API.
+- Still open: portal sign-in needs the portal and API on one parent domain (D30, Q31); `TRUST_PROXY` value; real Turnstile keys; backups restore test.
+
 ## Before go-live (blocking items)
 
 0a. **Manager account and sessions:** there is no default account. Create the one manager (D23) once per environment with `MANAGER_NAME`, `MANAGER_PHONE` and `MANAGER_PASSWORD` set for that command only, then `pnpm --filter api create-manager`; it refuses to run if a manager exists. Set `CORS_ORIGINS` to the portal origin(s). Sessions live in PostgreSQL (the package refuses in-memory sessions in production). The `__Host-sid` cookie needs HTTPS and the API and portal on the same parent domain (D30, Q31 open).
