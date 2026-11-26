@@ -102,4 +102,4 @@ Created so far: root workspace files, `docs/`, and `apps/api` (NestJS 12, ESM, V
 ## Notes
 
 - Whether the portal is one app or two can be revisited. One app with role-based routes is the Phase 1 choice.
-- `apps/storefront` assumes the Next.js App Router. Confirm the current recommended setup in the official docs when scaffolding.
+- `apps/storefront` uses the Next.js App Router with a `src/` folder (confirmed against the Next.js installation docs on 2026-11-26). Plain CSS, no UI library; all customer wording is in `src/lib/copy.ts` (Q14).

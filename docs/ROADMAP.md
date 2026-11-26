@@ -42,5 +42,7 @@ Suggested build order:
 - WhatsApp notifications through a business API provider (approval requirements to be verified).
 - Optional: demand forecasting from stock and order history. This is the one place a separate FastAPI service could be justified.
 
+**Storefront S1 (2026-11-26):** `apps/storefront` (Next.js): home page listing products, one landing page per product at `/products/<slug>` with the bundle choice, the order form (name, phone, county, location), Open Graph tags, UTM capture, Cloudflare Turnstile, a "Talk to us" WhatsApp button (hidden until Q9 is answered) and a confirmation page. English only (D39), neutral wording (D40). **Not done:** test inside Facebook's in-app browser on real phones (US-9, UNVERIFIED), real product copy and images (Q14), Turnstile site key, Content-Security-Policy, deployment.
+
 ## Not planned
 Native mobile apps, multi-country support, marketplace features, customer accounts (revisit if the client asks).

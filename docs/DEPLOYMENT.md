@@ -6,7 +6,7 @@ Status: Draft v0.1, 2026-11-15. Platform details below are plans, not verified f
 
 | Environment | API | Storefront | Database |
 |---|---|---|---|
-| Local | `pnpm dev:api` | `pnpm --filter storefront dev` (not created yet) | Local PostgreSQL (Docker) or a separate dev database |
+| Local | `pnpm dev:api` | `pnpm dev:storefront` (http://localhost:3001) | Local PostgreSQL (Docker) or a separate dev database |
 | Staging (recommended) | Render | Vercel preview | Separate Render Postgres (a cheaper plan; free Postgres expires after 30 days) |
 | Production | Render (paid) | Vercel | Render Postgres (paid) |
 
@@ -41,11 +41,12 @@ Status: Draft v0.1, 2026-11-15. Platform details below are plans, not verified f
 | `SMS_PROVIDER` | api | Provider selector |
 | `SMS_API_KEY`, `SMS_USERNAME`, `SMS_SENDER_ID` | api | Provider credentials (names depend on provider) |
 | `CAPTCHA_SECRET` | api | Bot-protection verification (Cloudflare Turnstile secret key, D22) |
-| `NEXT_PUBLIC_API_URL` | storefront | API base URL |
+| `NEXT_PUBLIC_API_URL` | storefront | API base URL, no trailing slash. Required in production (the build fails loudly if it is missing). The browser calls the API directly, not through Vercel, so the rate limit sees each customer's own IP |
+| `NEXT_PUBLIC_SITE_URL` | storefront | The storefront's public address, used for link-preview (Open Graph) URLs |
 | `NEXT_PUBLIC_CAPTCHA_SITE_KEY` | storefront | Public Turnstile site key |
 | `NEXT_PUBLIC_WHATSAPP_NUMBER` | storefront | Manager WhatsApp number (digits only) |
 | `VITE_API_URL` | portal | API base URL |
-| `CORS_ORIGINS` | api | Portal origins allowed to send the session cookie to the API, comma separated, no paths (D30). Empty means none. Also used as the CSRF trusted origins |
+| `CORS_ORIGINS` | api | Browser origins allowed to call the API, comma separated, no paths: the portal (session cookie, D30) **and the storefront** (the public order form posts to the API from the browser, so its origin must be listed or the API refuses it). Empty means none. Also used as the CSRF trusted origins |
 | `TRUST_PROXY` | api | How many proxies, or which addresses, to trust for the client IP (Express `trust proxy`). **UNVERIFIED value for Render**; see go-live item 0 |
 | `NODE_ENV`, `PORT`, `TZ` | api | Runtime (`TZ` optional; the app stores UTC) |
 

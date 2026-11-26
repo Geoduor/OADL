@@ -48,6 +48,12 @@ pnpm lint && pnpm typecheck && pnpm test
 
 The database tests refuse to run unless `DATABASE_URL` points at localhost.
 
+### Try the storefront locally
+
+1. In `apps/api/.env` set `CORS_ORIGINS=http://localhost:3001` (the shop calls the API from the browser) and `CAPTCHA_SECRET` to the Cloudflare test secret above, then restart `pnpm dev:api`.
+2. Copy `apps/storefront/.env.example` to `apps/storefront/.env.local` and set `NEXT_PUBLIC_API_URL=http://localhost:3000`. Leave `NEXT_PUBLIC_CAPTCHA_SITE_KEY` empty: locally the form then sends Cloudflare's dummy token, which the test secret accepts. In production the form refuses to submit without a real site key.
+3. `pnpm dev:storefront`, then open http://localhost:3001/products/prostguard.
+
 ## Documentation map
 
 | File | Purpose |
