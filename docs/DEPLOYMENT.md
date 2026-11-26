@@ -10,6 +10,31 @@ Status: Draft v0.1, 2026-11-15. Platform details below are plans, not verified f
 | Staging (recommended) | Render | Vercel preview | Separate Render Postgres (a cheaper plan; free Postgres expires after 30 days) |
 | Production | Render (paid) | Vercel | Render Postgres (paid) |
 
+## Go-live plan (researched 2026-11-26; costs need the owner's approval, AGENTS.md §9)
+
+Verified from current official pages (links in "Sources" below):
+
+- **Vercel Hobby is not for commercial use.** Terms, section 4: "You shall only use the Services under a Hobby plan for your personal or non-commercial use." OADL sells to customers, so the storefront and portal need **Vercel Pro**. Developer seats are $20 per user per month (Hobby plan page); whether Pro has a further base fee is UNVERIFIED (read the Pro plan page before approving). Free Hobby is fine only for throw-away staging.
+- **Render web service:** `0.5c-512mb` is $7 a month (pricing page, 2026-11-26). Render's own Prisma guide says the pre-deploy command runs only on **paid** web services and uses `npx prisma migrate deploy` as the Pre-Deploy Command and the **internal** database URL for `DATABASE_URL`. Adapt to our pnpm commands and test on staging.
+- **Render Postgres:** `0.1c-256mb` is $6 a month; the free database has no backups or recovery. Paid databases get point-in-time recovery: 3 days on the Hobby workspace, 7 days on Pro. Logical backups (dashboard download) are kept 7 days on every workspace plan. Backups stay in the database's region. A restore test is still required (item 2).
+- **Region:** Render has no African region (Oregon, Ohio, Virginia, Frankfurt, Singapore). Frankfurt is probably closest to Kenya (inference, UNVERIFIED): measure from a Kenyan phone before choosing (Q28). API and database must share a region to use the private network.
+- **Cloudflare Turnstile Free:** up to 20 widgets, 10 hostnames per widget, unlimited challenges, 7 days of analytics. One widget with the production hostnames is enough.
+- **Domain:** `.ke` names can only be registered through KeNIC-accredited registrars; prices differ per registrar and KeNIC lists none, so compare registrars (price UNVERIFIED). Minimum one year.
+
+Still UNVERIFIED: Render's client-IP header and the right `TRUST_PROXY` value (Render's docs did not say; a community thread was inconclusive, so test with two phones on staging); Vercel Pro base price; `.co.ke` price; Facebook-side steps (Sharing Debugger and in-app browser behaviour, US-9).
+
+Recommended order:
+
+1. Choose and buy a domain (owner decides name; Q31). Use subdomains of one parent so the `__Host-sid` cookie rules and D30 hold, for example `shop.` (storefront), `app.` (portal), `api.` (API), or the bare domain for the shop.
+2. Staging first: Render Postgres + web service (paid, so pre-deploy works), Vercel project per app with the Root Directory set to the app folder (monorepo settings UNVERIFIED, read Vercel's monorepo docs first).
+3. Set the environment variables below; `CORS_ORIGINS` lists the storefront and portal origins; set `TRUST_PROXY` after testing.
+4. Create the Turnstile widget with the production hostnames; set the secret and site key.
+5. Create the manager (`create-manager`), run the release smoke test on a real phone.
+6. Production: same steps with the production database; take a backup before the first migration.
+7. Only then post the storefront link on Facebook and test it in the Facebook in-app browser on real phones (no Facebook integration exists in code, D4).
+
+Sources: [Vercel Terms](https://vercel.com/terms), [Vercel Hobby plan](https://vercel.com/docs/plans/hobby), [Render pricing](https://render.com/pricing), [Render Postgres backups](https://render.com/docs/postgresql-backups), [Prisma on Render](https://www.prisma.io/docs/orm/v7/prisma-client/deployment/traditional/deploy-to-render), [Turnstile plans](https://developers.cloudflare.com/turnstile/plans), [KeNIC registration](https://kenic.or.ke/ke-domain-registration-process/).
+
 ## Before go-live (blocking items)
 
 0a. **Manager account and sessions:** there is no default account. Create the one manager (D23) once per environment with `MANAGER_NAME`, `MANAGER_PHONE` and `MANAGER_PASSWORD` set for that command only, then `pnpm --filter api create-manager`; it refuses to run if a manager exists. Set `CORS_ORIGINS` to the portal origin(s). Sessions live in PostgreSQL (the package refuses in-memory sessions in production). The `__Host-sid` cookie needs HTTPS and the API and portal on the same parent domain (D30, Q31 open).
