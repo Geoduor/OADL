@@ -135,3 +135,24 @@ export interface StockRow {
   available: number;
   needsAttention: boolean;
 }
+
+export interface StockOverviewAgent {
+  agentUserId: string;
+  agentName: string;
+  active: boolean;
+  products: StockRow[];
+}
+
+export type StockMovementType =
+  'ISSUE' | 'DELIVERY' | 'RETURN_TO_STORE' | 'ADJUSTMENT';
+
+export interface StockMovementRow {
+  type: StockMovementType;
+  quantity: number;
+  note: string | null;
+  createdAt: string;
+  product: { name: string };
+  agent: { displayName: string };
+  order: { orderNo: string } | null;
+  createdBy: { name: string } | null;
+}
