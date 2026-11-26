@@ -156,3 +156,22 @@ export interface StockMovementRow {
   order: { orderNo: string } | null;
   createdBy: { name: string } | null;
 }
+
+export interface PaymentsSummary {
+  from: string | null;
+  to: string | null;
+  agents: {
+    agentUserId: string;
+    agentName: string;
+    cashKes: number;
+    mpesaKes: number;
+    totalKes: number;
+    payments: number;
+  }[];
+  totals: {
+    cashKes: number;
+    mpesaKes: number;
+    totalKes: number;
+    payments: number;
+  };
+}
