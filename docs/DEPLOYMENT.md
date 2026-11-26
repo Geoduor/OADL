@@ -7,8 +7,8 @@ Status: Draft v0.1, 2026-11-15. Platform details below are plans, not verified f
 | Environment | API | Storefront | Database |
 |---|---|---|---|
 | Local | `pnpm dev:api` | `pnpm dev:storefront` (http://localhost:3001) | Local PostgreSQL (Docker) or a separate dev database |
-| Staging (recommended) | Render | Vercel preview | Separate Render Postgres (a cheaper plan; free Postgres expires after 30 days) |
-| Production | Render (paid) | Vercel | Render Postgres (paid) |
+| Staging (recommended) | Render | Render | Separate Render Postgres (a cheaper plan; free Postgres expires after 30 days) |
+| Production | Render (paid) | Render (paid web service) | Render Postgres (paid) |
 
 ## Go-live plan (researched 2026-11-26; costs need the owner's approval, AGENTS.md §9)
 
