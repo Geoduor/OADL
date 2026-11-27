@@ -46,5 +46,7 @@ Suggested build order:
 
 **Notifications N1 (2026-11-27, API only, step 8 part 1):** stored in-app notifications (`Notification` table, migration `add_notifications`) written in the same transaction as the change that causes them: managers on a new storefront order (best effort) and when an agent moves an order on; an agent when an order is assigned to them, moved off them or cancelled, or rescheduled by the manager. Bodies carry the order number and county only. Endpoints for both roles: `GET /notifications` (`unread`, `limit`), `GET /notifications/unread-count`, `POST /notifications/:id/read`, `POST /notifications/read-all`. Not built: the live pop-up (WebSocket, N2), the portal bell and list (N3), Web Push (Phase 2), SMS and sheet sync.
 
+**Notifications N3 (2026-11-27, portal):** an Alerts link with an unread count in the top bar for both roles (checks every 20 seconds, when the tab becomes visible, and right after reading), and a Notifications page (newest first, tap to mark read and open the order, mark all as read). An agent is not linked to an order taken off them. Still not built: the live pop-up (N2), Web Push (Phase 2).
+
 ## Not planned
 Native mobile apps, multi-country support, marketplace features, customer accounts (revisit if the client asks).

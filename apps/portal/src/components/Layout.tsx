@@ -1,8 +1,11 @@
 import { NavLink, Outlet } from 'react-router';
 import { useAuth } from '../app/auth.js';
+import { useUnreadCount } from '../app/useUnreadCount.js';
+import { badgeText } from '../lib/notifications.js';
 
 export function Layout() {
   const { user, signOut } = useAuth();
+  const unread = useUnreadCount(user !== null);
   return (
     <div className="shell">
       <header className="topbar">
@@ -24,6 +27,16 @@ export function Layout() {
           </nav>
         )}
         <span className="spacer" />
+        <NavLink
+          to="/notifications"
+          className="bell"
+          aria-label={
+            unread > 0 ? `Notifications, ${unread} unread` : 'Notifications'
+          }
+        >
+          Alerts
+          {unread > 0 && <span className="count">{badgeText(unread)}</span>}
+        </NavLink>
         <span className="who">{user?.name}</span>
         <button type="button" className="link" onClick={() => void signOut()}>
           Sign out
