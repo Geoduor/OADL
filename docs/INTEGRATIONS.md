@@ -72,3 +72,16 @@ Phase 1 records on-delivery payments only. For online M-Pesa, the Safaricom Dara
 ## 7. Distance-based assignment (Phase 2)
 
 Needs customer coordinates (map pin) or a geocoding service. Provider, cost and Kenya coverage are **UNVERIFIED**. Phase 1 assigns by county.
+
+## 6. Notification research (2026-11-27)
+
+Verified from the sources linked below unless marked.
+
+- **Web Push needs an active service worker** and works whether or not the app is in the foreground or even loaded; the service worker is started to handle the push (MDN, Push API). A subscription is an endpoint plus encryption keys; the endpoint is a secret capability URL and subscription endpoints need CSRF protection (MDN). In Chrome there is no quota on push messages (MDN).
+- **iPhone:** Web Push arrived in iOS and iPadOS 16.4 and works only for web apps **added to the Home Screen**; permission can only be requested in response to a direct user action such as tapping a button (WebKit blog). Agents on iPhone must install the PWA first. Android phones are the common case, but which phones the agents use is still open (Q11).
+- **VAPID keys and the server library** (for example the `web-push` npm package) are UNVERIFIED: read the library's current README and RFC 8292 before building.
+- **Cost of Web Push:** no vendor fee was found in the sources above, but not checked against Google's and Apple's push services' terms (UNVERIFIED).
+- **Limit of in-app notifications (Phase 1, D11):** the live pop-up only reaches an agent who has the portal open. An agent with the app closed gets nothing until Web Push exists (Phase 2 in the roadmap). The stored notification list is still the source of truth after reconnecting.
+- **Customer SMS (Phase 1, Q6)** is a paid service and needs the owner's approval. One Kenyan vendor's own page lists KES 0.60 per SMS under 5,000 a month and a KES 6,500 one-time sender ID per network; another source (a help page that did not name its provider, so not confirmed to be Africa's Talking) lists a sender ID at KES 7,500 + 16% VAT = KES 8,700. Application takes days (5 to 14 working days quoted). Prices are vendor list prices, UNVERIFIED for OADL; compare providers before choosing.
+
+Sources: [MDN Push API](https://developer.mozilla.org/en/docs/Web/API/Push_API), [WebKit: Web Push for Web Apps on iOS and iPadOS](https://webkit.org/?p=13878), [Celcom Africa bulk SMS pricing](https://celcomafrica.com/bulk-sms-pricing), [sender ID help page](https://help.africastalking.com/en/articles/407085-how-do-i-set-up-my-sender-id-in-kenya-or-uganda).
