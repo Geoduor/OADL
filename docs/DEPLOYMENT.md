@@ -95,6 +95,7 @@ Tested by actually deploying (frankfurt, all paid): `oadl-db-staging` (Postgres 
 | `NEXT_PUBLIC_CAPTCHA_SITE_KEY` | storefront | Public Turnstile site key |
 | `NEXT_PUBLIC_WHATSAPP_NUMBER` | storefront | Manager WhatsApp number (digits only) |
 | `VITE_API_URL` | portal | API base URL |
+| `VITE_CAPTCHA_SITE_KEY` | portal | Turnstile site key (public) for the agent registration page; required in production |
 | `CORS_ORIGINS` | api | Browser origins allowed to call the API, comma separated, no paths: the portal (session cookie, D30) **and the storefront** (the public order form posts to the API from the browser, so its origin must be listed or the API refuses it). Empty means none. Also used as the CSRF trusted origins |
 | `TRUST_PROXY` | api | How many proxies, or which addresses, to trust for the client IP (Express `trust proxy`). **UNVERIFIED value for Render**; see go-live item 0 |
 | `NODE_ENV`, `PORT`, `TZ` | api | Runtime (`TZ` optional; the app stores UTC) |
