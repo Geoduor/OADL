@@ -1,14 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '../generated/prisma/client.js';
 import { PrismaService } from '../prisma/prisma.service.js';
+import { nairobiDayStart } from '../time/nairobi.js';
 import type { PaymentsSummaryQuery } from './payments.schemas.js';
 
 const DAY_MS = 86_400_000;
 
-// A Nairobi calendar day starts at 00:00 +03:00 (no daylight saving).
-export function nairobiDayStart(date: string): Date {
-  return new Date(`${date}T00:00:00+03:00`);
-}
+// Kept exported from here for the files that already import it.
+export { nairobiDayStart };
 
 // Read-only report of what each agent has recorded as collected (D34).
 // "Collected" is what the agent says they received. Handing it over to the
