@@ -1,4 +1,5 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import { NotificationsService } from '../notifications/notifications.service.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { isUniqueViolation } from '../prisma/unique-violation.js';
 import type { CreateOrderInput } from './create-order.schema.js';
@@ -25,13 +26,19 @@ const MAX_ORDER_NO_ATTEMPTS = 5;
 
 @Injectable()
 export class OrdersService {
-  constructor(private readonly prisma: PrismaService) {}
+  private readonly logger = new Logger(OrdersService.name);
+
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly notifications: NotificationsService,
+  ) {}
 
   // Public order creation. Prices always come from the database; the
   // idempotency key makes a repeated submit return the first order.
   // Initial status is PLACED. Later status changes belong to the state
   // machine service (docs/ORDER_LIFECYCLE.md), which does not exist yet.
-  // TODO(confirm): manager notification and sheet sync are not built yet.
+  // Managers get a stored notification for each new order (best effort: a
+  // failure never fails the order). TODO(confirm): sheet sync is not built yet.
   async create(input: NewOrder) {
     const existing = await this.findByIdempotencyKey(input.idempotencyKey);
     if (existing) {
@@ -67,8 +74,13 @@ export class OrdersService {
             items: { create: lines },
             history: { create: [{ toStatus: 'PLACED' }] },
           },
-          select: publicOrderSelect,
+          select: {
+            ...publicOrderSelect,
+            id: true,
+            county: { select: { name: true } },
+          },
         });
+        await this.notifyManagersOfNewOrder(order);
         return this.toResponse(order);
       } catch (error) {
         if (!isUniqueViolation(error)) {
@@ -167,6 +179,33 @@ export class OrdersService {
       }
     }
     throw new Error('Could not allocate an order number');
+  }
+
+  // Best effort: the order is already saved, so a notification failure is
+  // logged (order number only, no customer data) and swallowed.
+  private async notifyManagersOfNewOrder(order: {
+    id: string;
+    orderNo: string;
+    county: { name: string };
+  }): Promise<void> {
+    try {
+      const managerIds = await this.notifications.managerIds(this.prisma);
+      await this.notifications.createMany(
+        this.prisma,
+        managerIds.map((userId) => ({
+          userId,
+          type: 'ORDER_PLACED' as const,
+          title: 'New order',
+          body: `${order.orderNo} from ${order.county.name}`,
+          orderId: order.id,
+        })),
+      );
+    } catch (error) {
+      this.logger.error(
+        `Could not store the new-order notification for ${order.orderNo}`,
+        error instanceof Error ? error.stack : undefined,
+      );
+    }
   }
 
   // Prices always come from the database, never from the client. Every line

@@ -11,6 +11,7 @@ import { AuthModule } from './auth/auth.module.js';
 import { allowedOrigins } from './config/origins.js';
 import { CountiesModule } from './counties/counties.module.js';
 import { HealthModule } from './health/health.module.js';
+import { NotificationsModule } from './notifications/notifications.module.js';
 import { OrdersModule } from './orders/orders.module.js';
 import { ProductsModule } from './products/products.module.js';
 
@@ -39,6 +40,7 @@ import { ProductsModule } from './products/products.module.js';
     ProductsModule,
     CountiesModule,
     HealthModule,
+    NotificationsModule,
     OrdersModule,
   ],
   controllers: [AppController],
