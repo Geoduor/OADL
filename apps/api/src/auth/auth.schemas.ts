@@ -4,7 +4,7 @@ import { normaliseKenyanMobile } from '../orders/phone.js';
 const phone = z
   .string()
   .trim()
-  .max(20)
+  .max(20, 'Enter a valid Kenyan mobile number')
   .transform((value, ctx) => {
     const normalised = normaliseKenyanMobile(value);
     if (normalised === null) {
