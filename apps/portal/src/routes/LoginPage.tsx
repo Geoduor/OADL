@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react';
-import { Navigate, useLocation } from 'react-router';
+import { Link, Navigate, useLocation } from 'react-router';
 import { useAuth } from '../app/auth.js';
 import { ApiError } from '../lib/api.js';
 
@@ -68,6 +68,9 @@ export function LoginPage() {
         <button type="submit" className="primary" disabled={busy}>
           {busy ? 'Signing in…' : 'Sign in'}
         </button>
+        <p className="muted">
+          New agent? <Link to="/register">Register here</Link>
+        </p>
       </form>
     </main>
   );

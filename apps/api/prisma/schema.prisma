@@ -102,6 +102,7 @@ model Order {
   history       OrderStatusHistory[]
   payments      Payment[]
   stockMovements StockMovement[]
+  notifications  Notification[]
 
   @@index([status])
   @@index([countyId])
@@ -174,6 +175,7 @@ model User {
   statusChanges OrderStatusHistory[]
   paymentsRecorded Payment[]
   stockMovementsCreated StockMovement[]
+  notifications Notification[]
 
   @@map("users")
 }
@@ -288,4 +290,34 @@ model StockMovement {
   @@unique([orderId, productId, type])
   @@index([agentId, productId])
   @@map("stock_movements")
+}
+
+enum NotificationType {
+  ORDER_PLACED
+  ORDER_ASSIGNED
+  ORDER_RELEASED
+  ORDER_STATUS_CHANGED
+}
+
+// A stored in-app notification (docs/DATA_MODEL.md). Titles and bodies carry
+// the order number and county only, never the customer's name, phone or
+// address, because push services will carry them later. Deleting a user or an
+// order removes their notifications: they are derived data, and production
+// never hard-deletes either.
+model Notification {
+  id        String           @id @default(uuid())
+  userId    String
+  type      NotificationType
+  title     String
+  body      String
+  orderId   String?
+  readAt    DateTime?
+  createdAt DateTime         @default(now())
+
+  user  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  order Order? @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([userId, readAt])
+  @@map("notifications")
 }

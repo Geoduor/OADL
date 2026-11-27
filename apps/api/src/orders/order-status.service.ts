@@ -6,6 +6,10 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import type { AuthUser } from '../auth/auth-types.js';
+import {
+  NotificationsService,
+  type NewNotification,
+} from '../notifications/notifications.service.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { StockService } from '../stock/stock.service.js';
 import type { ChangeStatusInput } from './order-status.schemas.js';
@@ -24,6 +28,7 @@ export class OrderStatusService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly stock: StockService,
+    private readonly notifications: NotificationsService,
   ) {}
 
   async change(orderId: string, actor: AuthUser, input: ChangeStatusInput) {
@@ -31,9 +36,11 @@ export class OrderStatusService {
       where: { id: orderId },
       select: {
         id: true,
+        orderNo: true,
         status: true,
         assignedAgentId: true,
         assignedAgent: { select: { userId: true } },
+        county: { select: { name: true } },
       },
     });
     // An agent only ever sees orders assigned to them (D27); anything else
@@ -76,6 +83,7 @@ export class OrderStatusService {
     }
 
     let newAgentId: string | null = order.assignedAgentId;
+    let newAgentUserId: string | null = null;
     let overridden = false;
     if (rule.needs === 'agent') {
       if (!input.agentUserId) {
@@ -87,7 +95,7 @@ export class OrderStatusService {
           active: true,
           user: { status: 'ACTIVE', role: 'AGENT' },
         },
-        select: { id: true },
+        select: { id: true, userId: true },
       });
       if (!agent) {
         throw new BadRequestException('That agent is not active');
@@ -96,6 +104,7 @@ export class OrderStatusService {
         throw new BadRequestException('The order is already with that agent');
       }
       newAgentId = agent.id;
+      newAgentUserId = agent.userId;
 
       // Stock check (D35): the agent needs enough available stock for every
       // item. The manager can override after being warned. The check is
@@ -216,8 +225,100 @@ export class OrderStatusService {
           changedByUserId: actor.id,
         },
       });
+      // Written in the same transaction, so a notification exists exactly
+      // when the change does. Bodies carry the order number and county only.
+      await this.notifications.createMany(
+        tx,
+        await this.notificationsFor(tx, {
+          order,
+          actor,
+          to: input.to,
+          newAgentUserId,
+          clearsAgent: rule.clearsAgent === true,
+        }),
+      );
     });
   }
+
+  // Who needs to know about this change:
+  // - a newly assigned agent: the order is theirs now;
+  // - the agent the order leaves (moved, cancelled, sent back): it is no
+  //   longer theirs;
+  // - the agent, when the manager reschedules or cancels their order;
+  // - the managers, when an agent moves the order on.
+  private async notificationsFor(
+    tx: Parameters<NotificationsService['managerIds']>[0],
+    change: {
+      order: {
+        id: string;
+        orderNo: string;
+        assignedAgent: { userId: string } | null;
+        county: { name: string };
+      };
+      actor: AuthUser;
+      to: ChangeStatusInput['to'];
+      newAgentUserId: string | null;
+      clearsAgent: boolean;
+    },
+  ): Promise<NewNotification[]> {
+    const { order, actor, to, newAgentUserId, clearsAgent } = change;
+    const where = `${order.orderNo} in ${order.county.name}`;
+    const items: NewNotification[] = [];
+    const previousAgentUserId = order.assignedAgent?.userId ?? null;
+
+    if (newAgentUserId) {
+      items.push({
+        userId: newAgentUserId,
+        type: 'ORDER_ASSIGNED',
+        title: 'New order assigned',
+        body: where,
+        orderId: order.id,
+      });
+    }
+    // The previous agent loses the order when it is cancelled, sent back, or
+    // given to someone else. Agents never need telling about their own moves.
+    if (previousAgentUserId && actor.role === 'MANAGER') {
+      const leaves =
+        to === 'CANCELLED' ||
+        clearsAgent ||
+        (newAgentUserId !== null && newAgentUserId !== previousAgentUserId);
+      if (leaves) {
+        items.push({
+          userId: previousAgentUserId,
+          type: 'ORDER_RELEASED',
+          title: to === 'CANCELLED' ? 'Order cancelled' : 'Order taken off you',
+          body: where,
+          orderId: order.id,
+        });
+      } else if (!newAgentUserId) {
+        // The manager changed the order and the same agent keeps it
+        // (rescheduled).
+        items.push({
+          userId: previousAgentUserId,
+          type: 'ORDER_STATUS_CHANGED',
+          title: `Order ${statusLabel(to)}`,
+          body: where,
+          orderId: order.id,
+        });
+      }
+    }
+    if (actor.role === 'AGENT') {
+      for (const userId of await this.notifications.managerIds(tx)) {
+        items.push({
+          userId,
+          type: 'ORDER_STATUS_CHANGED',
+          title: `Order ${statusLabel(to)}`,
+          body: `${where} (${actor.name})`,
+          orderId: order.id,
+        });
+      }
+    }
+    return items;
+  }
+}
+
+function statusLabel(status: string): string {
+  return status.toLowerCase();
 }
 
 // YYYY-MM-DD in Kenya, so "today" matches the manager's calendar.

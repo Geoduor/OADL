@@ -6,6 +6,8 @@ import { AgentOrderPage } from '../routes/agent/AgentOrderPage.js';
 import { AgentOrdersPage } from '../routes/agent/AgentOrdersPage.js';
 import { AgentStockPage } from '../routes/agent/AgentStockPage.js';
 import { LoginPage } from '../routes/LoginPage.js';
+import { RegisterPage } from '../routes/RegisterPage.js';
+import { NotificationsPage } from '../routes/NotificationsPage.js';
 import { AgentsPage } from '../routes/manager/AgentsPage.js';
 import { CreateOrderPage } from '../routes/manager/CreateOrderPage.js';
 import { PaymentsPage } from '../routes/manager/PaymentsPage.js';
@@ -18,9 +20,11 @@ export function App() {
   return (
     <Routes>
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
       <Route element={<RequireAuth />}>
         <Route element={<Layout />}>
           <Route index element={<HomeRedirect />} />
+          <Route path="/notifications" element={<NotificationsPage />} />
           <Route element={<RequireRole role="MANAGER" />}>
             <Route path="/manager/orders" element={<OrdersPage />} />
             <Route path="/manager/orders/new" element={<CreateOrderPage />} />

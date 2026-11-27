@@ -207,3 +207,18 @@ export interface AgentHistory {
     items: { productName: string; quantity: number }[];
   }[];
 }
+
+export type NotificationType =
+  'ORDER_PLACED' | 'ORDER_ASSIGNED' | 'ORDER_RELEASED' | 'ORDER_STATUS_CHANGED';
+
+// GET /notifications (apps/api/src/notifications). Text carries the order
+// number and county only, never customer details.
+export interface NotificationRow {
+  id: string;
+  type: NotificationType;
+  title: string;
+  body: string;
+  orderId: string | null;
+  readAt: string | null;
+  createdAt: string;
+}
