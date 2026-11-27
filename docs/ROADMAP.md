@@ -44,5 +44,7 @@ Suggested build order:
 
 **Storefront S1 (2026-11-26):** `apps/storefront` (Next.js): home page listing products, one landing page per product at `/products/<slug>` with the bundle choice, the order form (name, phone, county, location), Open Graph tags, UTM capture, Cloudflare Turnstile, a "Talk to us" WhatsApp button (hidden until Q9 is answered) and a confirmation page. English only (D39), neutral wording (D40). **Not done:** test inside Facebook's in-app browser on real phones (US-9, UNVERIFIED), real product copy and images (Q14), Turnstile site key, Content-Security-Policy, deployment.
 
+**Notifications N1 (2026-11-27, API only, step 8 part 1):** stored in-app notifications (`Notification` table, migration `add_notifications`) written in the same transaction as the change that causes them: managers on a new storefront order (best effort) and when an agent moves an order on; an agent when an order is assigned to them, moved off them or cancelled, or rescheduled by the manager. Bodies carry the order number and county only. Endpoints for both roles: `GET /notifications` (`unread`, `limit`), `GET /notifications/unread-count`, `POST /notifications/:id/read`, `POST /notifications/read-all`. Not built: the live pop-up (WebSocket, N2), the portal bell and list (N3), Web Push (Phase 2), SMS and sheet sync.
+
 ## Not planned
 Native mobile apps, multi-country support, marketplace features, customer accounts (revisit if the client asks).
