@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router';
 import { api, ApiError } from '../../lib/api.js';
 import { formatKes, formatNairobi } from '../../lib/format.js';
+import { orderCopyText } from '../../lib/order-text.js';
 import { actionsFor, type ManagerAction } from '../../lib/order-actions.js';
 import type {
   AgentView,
@@ -34,6 +35,7 @@ export function OrderDetailPage() {
   const [agentUserId, setAgentUserId] = useState('');
   const [shortfalls, setShortfalls] = useState<StockShortfall[] | null>(null);
   const [busy, setBusy] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const load = useCallback(async () => {
     try {
@@ -122,6 +124,17 @@ export function OrderDetailPage() {
     (action.needs !== 'date' || date.length > 0) &&
     (action.needs !== 'agent' || agentUserId.length > 0);
 
+  async function copyDetails() {
+    if (!order) return;
+    try {
+      await navigator.clipboard.writeText(orderCopyText(order));
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      setError('Could not copy. Your browser blocked clipboard access.');
+    }
+  }
+
   return (
     <section>
       <p>
@@ -132,6 +145,9 @@ export function OrderDetailPage() {
         <span className={`badge ${order.status.toLowerCase()}`}>
           {order.status}
         </span>
+        <button type="button" onClick={() => void copyDetails()}>
+          {copied ? 'Copied' : 'Copy order details'}
+        </button>
       </div>
       {error && (
         <p className="error" role="alert">

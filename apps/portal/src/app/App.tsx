@@ -1,5 +1,7 @@
 import { Navigate, Route, Routes } from 'react-router';
 import { Layout } from '../components/Layout.js';
+import { AgentHistoryPage } from '../routes/agent/AgentHistoryPage.js';
+import { AgentHomePage } from '../routes/agent/AgentHomePage.js';
 import { AgentOrderPage } from '../routes/agent/AgentOrderPage.js';
 import { AgentOrdersPage } from '../routes/agent/AgentOrdersPage.js';
 import { AgentStockPage } from '../routes/agent/AgentStockPage.js';
@@ -32,7 +34,9 @@ export function App() {
             <Route path="/manager/payments" element={<PaymentsPage />} />
           </Route>
           <Route element={<RequireRole role="AGENT" />}>
-            <Route path="/agent" element={<AgentOrdersPage />} />
+            <Route path="/agent" element={<AgentHomePage />} />
+            <Route path="/agent/orders" element={<AgentOrdersPage />} />
+            <Route path="/agent/history" element={<AgentHistoryPage />} />
             <Route path="/agent/orders/:id" element={<AgentOrderPage />} />
             <Route path="/agent/stock" element={<AgentStockPage />} />
           </Route>

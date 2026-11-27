@@ -176,6 +176,38 @@ export interface PaymentsSummary {
   };
 }
 
+export type HistoryRange = 'today' | 'week' | 'month' | 'all';
+
+export interface AgentOverview {
+  date: string;
+  deliveredToday: number;
+  collectedTodayKes: number;
+  open: {
+    total: number;
+    assigned: number;
+    dispatched: number;
+    rescheduled: number;
+    unresponsive: number;
+  };
+  completedToday: { done: number; of: number };
+}
+
+export interface AgentHistory {
+  range: HistoryRange;
+  count: number;
+  collectedKes: number;
+  deliveries: {
+    id: string;
+    orderNo: string;
+    county: string;
+    deliveredAt: string;
+    method: 'CASH' | 'MPESA';
+    amountKes: number;
+    orderTotalKes: number;
+    items: { productName: string; quantity: number }[];
+  }[];
+}
+
 export type NotificationType =
   'ORDER_PLACED' | 'ORDER_ASSIGNED' | 'ORDER_RELEASED' | 'ORDER_STATUS_CHANGED';
 
