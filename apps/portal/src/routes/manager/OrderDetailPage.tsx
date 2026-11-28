@@ -3,7 +3,11 @@ import { Link, useParams } from 'react-router';
 import { api, ApiError } from '../../lib/api.js';
 import { formatKes, formatNairobi } from '../../lib/format.js';
 import { orderCopyText } from '../../lib/order-text.js';
-import { actionsFor, type ManagerAction } from '../../lib/order-actions.js';
+import {
+  actionsFor,
+  canAutoAssign,
+  type ManagerAction,
+} from '../../lib/order-actions.js';
 import type {
   AgentView,
   ManagerOrderDetail,
@@ -62,6 +66,22 @@ export function OrderDetailPage() {
     setAgentUserId('');
     setShortfalls(null);
     setError(null);
+  }
+
+  // US-13: the system picks the agent. When nobody qualifies the order stays
+  // as it is and the server's reason is shown.
+  async function autoAssign() {
+    setBusy(true);
+    setError(null);
+    try {
+      await api(`/manager/orders/${id}/auto-assign`, { method: 'POST' });
+      setAction(null);
+      await load();
+    } catch (caught) {
+      setError(messageOf(caught));
+    } finally {
+      setBusy(false);
+    }
   }
 
   async function submit(overrideStock = false) {
@@ -218,6 +238,15 @@ export function OrderDetailPage() {
         <p className="muted">No further actions for this order.</p>
       ) : (
         <div className="actions wrap">
+          {canAutoAssign(order) && (
+            <button
+              type="button"
+              disabled={busy}
+              onClick={() => void autoAssign()}
+            >
+              Auto-assign
+            </button>
+          )}
           {actionsFor(order.status).map((option) => (
             <button
               key={option.key}

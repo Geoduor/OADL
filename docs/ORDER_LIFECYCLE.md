@@ -52,7 +52,7 @@ stateDiagram-v2
 |---|---|---|---|
 | PLACED | CONFIRMED | Manager | Manager has phoned the customer (D21) |
 | PLACED | UNRESPONSIVE | Manager | Customer could not be reached at confirmation (D21). Increments `attemptCount` |
-| CONFIRMED | ASSIGNED | Manager | Agent is active; stock available for all items. **Manual assign** (built): a shortfall returns 409 `INSUFFICIENT_STOCK` with the missing items, and the manager can repeat the request with `overrideStock: true` (the history notes the override). Auto-assign is not built |
+| CONFIRMED | ASSIGNED | Manager | Agent is active; stock available for all items. **Manual assign** (built): a shortfall returns 409 `INSUFFICIENT_STOCK` with the missing items, and the manager can repeat the request with `overrideStock: true` (the history notes the override). **Auto-assign** (built, `POST /manager/orders/:id/auto-assign`): picks an active agent who covers the order's county and has enough free stock for every item, with the fewest open orders; with no such agent it answers 409 `NO_AGENT_AVAILABLE` (`NO_COVERAGE` or `NO_STOCK`) and the order stays `CONFIRMED`. Only for a `CONFIRMED` order with no agent; the move goes through the same status service |
 | PLACED, CONFIRMED | CANCELLED | Manager | Reason |
 | ASSIGNED | DISPATCHED | Assigned agent | Triggers customer SMS |
 | ASSIGNED, DISPATCHED, UNRESPONSIVE | RESCHEDULED | Assigned agent or manager | New date required |
