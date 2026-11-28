@@ -13,6 +13,7 @@ import { allowedOrigins } from './config/origins.js';
 import { CountiesModule } from './counties/counties.module.js';
 import { HealthModule } from './health/health.module.js';
 import { NotificationsModule } from './notifications/notifications.module.js';
+import { PushModule } from './push/push.module.js';
 import { OrdersModule } from './orders/orders.module.js';
 import { ProductsModule } from './products/products.module.js';
 
@@ -43,6 +44,7 @@ import { ProductsModule } from './products/products.module.js';
     CountiesModule,
     HealthModule,
     NotificationsModule,
+    PushModule,
     OrdersModule,
   ],
   controllers: [AppController],
