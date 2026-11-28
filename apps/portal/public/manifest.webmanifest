@@ -1,0 +1,9 @@
+{
+  "name": "OADL Portal",
+  "short_name": "OADL",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#121614",
+  "theme_color": "#14532d"
+}

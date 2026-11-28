@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useAuth } from '../app/auth.js';
+import { AlertsToggle } from '../components/AlertsToggle.js';
 import { api } from '../lib/api.js';
 import { formatNairobi } from '../lib/format.js';
 import {
@@ -84,6 +85,7 @@ export function NotificationsPage() {
           </button>
         )}
       </div>
+      <AlertsToggle />
       {error && (
         <p className="error" role="alert">
           {error}
