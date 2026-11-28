@@ -73,7 +73,7 @@ describe('Auto-assign (e2e)', () => {
       data: {
         userId: user.id,
         displayName: options.name ?? `Auto Agent ${phones.length}`,
-        active: options.active ?? true,
+        active: true,
         counties: { create: covers.map((countyId) => ({ countyId })) },
       },
     });
@@ -83,6 +83,13 @@ describe('Auto-assign (e2e)', () => {
         .set('Cookie', managerCookie)
         .send({ agentUserId: user.id, productId, quantity: options.stock })
         .expect(200);
+    }
+    // Stock can only be issued to an active agent, so disable afterwards.
+    if (options.active === false) {
+      await prisma.agent.update({
+        where: { id: agent.id },
+        data: { active: false },
+      });
     }
     return { cookie, userId: user.id, agentId: agent.id };
   }
