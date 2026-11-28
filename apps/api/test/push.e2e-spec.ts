@@ -118,14 +118,27 @@ describe('Web Push (e2e)', () => {
   });
 
   it('reports push as off when the VAPID settings are missing', async () => {
-    const res = await request(app.getHttpServer())
-      .get('/push/public-key')
-      .set('Cookie', agent.cookie)
-      .expect(200);
-    expect(res.body).toEqual({ enabled: false, publicKey: null });
+    // A developer's own .env may hold real keys: clear them for this test.
+    const names = ['VAPID_PUBLIC_KEY', 'VAPID_PRIVATE_KEY', 'VAPID_SUBJECT'];
+    const saved = names.map((name) => process.env[name]);
+    names.forEach((name) => delete process.env[name]);
+    try {
+      const res = await request(app.getHttpServer())
+        .get('/push/public-key')
+        .set('Cookie', agent.cookie)
+        .expect(200);
+      expect(res.body).toEqual({ enabled: false, publicKey: null });
+    } finally {
+      names.forEach((name, index) => {
+        const value = saved[index];
+        if (value !== undefined) process.env[name] = value;
+      });
+    }
   });
 
   it('shares only the public key when push is on', async () => {
+    const names = ['VAPID_PUBLIC_KEY', 'VAPID_PRIVATE_KEY', 'VAPID_SUBJECT'];
+    const saved = names.map((name) => process.env[name]);
     process.env['VAPID_PUBLIC_KEY'] = 'test-public';
     process.env['VAPID_PRIVATE_KEY'] = 'test-private-secret';
     process.env['VAPID_SUBJECT'] = 'mailto:test@example.com';
@@ -137,9 +150,11 @@ describe('Web Push (e2e)', () => {
       expect(res.body).toEqual({ enabled: true, publicKey: 'test-public' });
       expect(JSON.stringify(res.body)).not.toContain('secret');
     } finally {
-      delete process.env['VAPID_PUBLIC_KEY'];
-      delete process.env['VAPID_PRIVATE_KEY'];
-      delete process.env['VAPID_SUBJECT'];
+      names.forEach((name, index) => {
+        const value = saved[index];
+        if (value === undefined) delete process.env[name];
+        else process.env[name] = value;
+      });
     }
   });
 
