@@ -176,6 +176,7 @@ model User {
   paymentsRecorded Payment[]
   stockMovementsCreated StockMovement[]
   notifications Notification[]
+  pushSubscriptions PushSubscription[]
 
   @@map("users")
 }
@@ -313,11 +314,32 @@ model Notification {
   orderId   String?
   readAt    DateTime?
   createdAt DateTime         @default(now())
+  // Web Push outbox state: null until the push sender has claimed the row;
+  // attempts count failed sends (the sender gives up after a few).
+  pushedAt     DateTime?
+  pushAttempts Int         @default(0)
 
   user  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   order Order? @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
   @@index([userId, createdAt])
   @@index([userId, readAt])
+  @@index([pushedAt, createdAt])
   @@map("notifications")
+}
+
+// One row per browser or phone a user turned alerts on for (Web Push, N4).
+// `endpoint` is a secret capability URL: never log it or return it in a list.
+model PushSubscription {
+  id        String   @id @default(uuid())
+  userId    String
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("push_subscriptions")
 }
