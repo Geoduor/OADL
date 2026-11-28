@@ -1,4 +1,4 @@
-import { actionsFor } from './order-actions.js';
+import { canAutoAssign, actionsFor } from './order-actions.js';
 import { ORDER_STATUSES } from './types.js';
 
 describe('actionsFor', () => {
@@ -28,5 +28,19 @@ describe('actionsFor', () => {
     const targets = actionsFor('UNRESPONSIVE').map((action) => action.to);
     expect(targets).toContain('PLACED');
     expect(targets).toContain('CONFIRMED');
+  });
+});
+
+describe('canAutoAssign', () => {
+  it('is for a confirmed order with no agent only', () => {
+    expect(canAutoAssign({ status: 'CONFIRMED', assignedAgent: null })).toBe(
+      true,
+    );
+    expect(canAutoAssign({ status: 'PLACED', assignedAgent: null })).toBe(
+      false,
+    );
+    expect(
+      canAutoAssign({ status: 'CONFIRMED', assignedAgent: { userId: 'u' } }),
+    ).toBe(false);
   });
 });

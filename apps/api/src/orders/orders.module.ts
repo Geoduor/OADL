@@ -5,6 +5,7 @@ import { StockModule } from '../stock/stock.module.js';
 import { TurnstileModule } from '../turnstile/turnstile.module.js';
 import { AgentOrdersController } from './agent-orders.controller.js';
 import { AgentOrdersService } from './agent-orders.service.js';
+import { AutoAssignService } from './auto-assign.service.js';
 import { ManagerOrdersController } from './manager-orders.controller.js';
 import { ManagerOrdersService } from './manager-orders.service.js';
 import { OrderStatusService } from './order-status.service.js';
@@ -23,6 +24,7 @@ import { OrdersService } from './orders.service.js';
     OrderStatusService,
     ManagerOrdersService,
     AgentOrdersService,
+    AutoAssignService,
   ],
 })
 export class OrdersModule {}

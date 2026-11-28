@@ -85,3 +85,13 @@ export function actionsFor(status: OrderStatus): ManagerAction[] {
       return [];
   }
 }
+
+// The server decides (apps/api/src/orders/auto-assign.service.ts); this only
+// hides a button that could never work: auto-assign is for a confirmed order
+// that has no agent yet.
+export function canAutoAssign(order: {
+  status: string;
+  assignedAgent: unknown | null;
+}): boolean {
+  return order.status === 'CONFIRMED' && !order.assignedAgent;
+}

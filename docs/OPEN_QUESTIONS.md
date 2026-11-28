@@ -90,3 +90,4 @@ Mark each as answered with a date when resolved.
 | Q34 | Agent earnings: do agents earn a fixed fee per delivery (the reference shows KES 150 per delivery, which is an example, not a confirmed rate), and does the manager want pay-out requests in the app? Relates to D38 (settlement is Phase 2) | Agents, payments |
 | Q35 | Do customers get a tracking link and a way to reschedule themselves, as in the reference? | Customer notifications |
 | Q36 | Agent rating and route optimisation: wanted? Who rates, and on what? | Agents |
+| Q37 | Auto-assign (US-13) tie-break and scope. When two agents have the same number of open orders, the build picks the earlier name, then the id. Should it be something else (for example the agent with the least stock used, or round robin)? Also: auto-assign only works on a confirmed order with no agent; reassigning stays manual. Is that right? (2026-11-28) | Assignment |
