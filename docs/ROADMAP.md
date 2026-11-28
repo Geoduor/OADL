@@ -50,5 +50,7 @@ Suggested build order:
 
 **Notifications N3 (2026-11-27, portal):** an Alerts link with an unread count in the top bar for both roles (checks every 20 seconds, when the tab becomes visible, and right after reading), and a Notifications page (newest first, tap to mark read and open the order, mark all as read). An agent is not linked to an order taken off them. Still not built: the live pop-up (N2), Web Push (Phase 2).
 
+**Notifications N4a (2026-11-28, API, Web Push):** `PushSubscription` table and `Notification.pushedAt/pushAttempts` (migration `add_web_push`); `GET /push/public-key`, `POST /push/subscribe`, `POST /push/unsubscribe` (own devices only). A sender in the API process polls every 5 seconds for fresh unsent alerts (under 10 minutes old) of users who have a device, claims each row, pushes title, body and a link (order number and county only), deletes devices the push service reports gone, and retries temporary failures up to 3 times. The stored notification is the outbox, so a push failure never touches an order. Off unless `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY` and `VAPID_SUBJECT` are set. Portal service worker and the "Turn on alerts" button are N4b.
+
 ## Not planned
 Native mobile apps, multi-country support, marketplace features, customer accounts (revisit if the client asks).
