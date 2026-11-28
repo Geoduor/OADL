@@ -4,10 +4,16 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from 'react';
 import { api, ApiError } from '../lib/api.js';
+import {
+  shouldRecheck,
+  userAfterCheck,
+  type SessionCheck,
+} from '../lib/session-check.js';
 import type { SessionUser } from '../lib/types.js';
 
 interface AuthState {
@@ -40,6 +46,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       cancelled = true;
     };
   }, []);
+
+  // Check again when the tab becomes visible, so a window left open does not
+  // keep showing someone who signed out or was replaced in another window.
+  const lastChecked = useRef(Date.now());
+  useEffect(() => {
+    if (!user) return;
+    const recheck = () => {
+      const now = Date.now();
+      if (!shouldRecheck(lastChecked.current, now, !document.hidden)) return;
+      lastChecked.current = now;
+      api<SessionUser>('/auth/me')
+        .then((me): SessionCheck => ({ kind: 'ok', me }))
+        .catch((error: unknown): SessionCheck =>
+          error instanceof ApiError && error.status === 401
+            ? { kind: 'unauthorized' }
+            : { kind: 'error' },
+        )
+        .then((result) =>
+          setUser((current) => userAfterCheck(current, result)),
+        );
+    };
+    document.addEventListener('visibilitychange', recheck);
+    return () => document.removeEventListener('visibilitychange', recheck);
+  }, [user]);
 
   const signIn = useCallback(async (phone: string, password: string) => {
     const me = await api<SessionUser>('/auth/login', {
